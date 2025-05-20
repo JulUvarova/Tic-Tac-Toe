@@ -38,9 +38,9 @@
 
 #### Token, Session Token, Refresh Token
 
-A **token** is a unique string of characters that replaces the user's login and password to prevent leaks of confidential information. Tokens have a specific lifespan and stop working once they expire.
+A **token** is a unique string of characters that replaces the user's login and password, preventing leaks of confidential information. Tokens have a specific lifespan and stop working once they expire.
 
-A **session token** gives the user the right to perform actions available to them during the session. It is reusable and has a short lifespan.
+A **session token** gives users the right to perform available actions during their session. It is reusable and has a short lifespan.
 
 A **refresh token** extends the validity of the session token. It is single-use and has a long lifespan.
 
@@ -67,17 +67,17 @@ Use the backend project from the previous week (T04).
 - Create a JwtResponse model that includes a type, accessToken, and refreshToken.
 - Create a RefreshJwtRequest model that includes refreshToken.
 - Implement a JwtProvider class with the following methods:
-  - Use io.jsonwebtoken.Jwts.builder() to generate tokens;
-  - A method to generate an **accessToken** from a User, storing information about the UUID and role in the token's claims (information about the object is stored in claims for future use);
-  - A method of generating a **refreshToken** from a User, storing information about the UUID in the token's claims;
-  - A method to validate the accessToken;
-  - A method to validate the refreshToken;
-  - A method to retrieve claims.
+  - use io.jsonwebtoken.Jwts.builder() to generate tokens;
+  - a method to generate an **accessToken** from a User, storing information about the UUID and role in the token's claims (information about the object is stored in claims for future use);
+  - a method of generating a **refreshToken** from a User, storing information about the UUID in the token's claims;
+  - a method to validate the accessToken;
+  - a method to validate the refreshToken;
+  - a method to retrieve claims.
 - Create a JwtAuthentication model that extends Authentication:
-  - For getAuthorities(), return the roles;
-  - For getPrincipal(), return the UUID;
-  - For getName(), return the UUID;
-  - For authentication status, add a separate field.
+  - for getAuthorities(), return the roles;
+  - for getPrincipal(), return the UUID;
+  - for getName(), return the UUID;
+  - for authentication status, add a separate field.
 - Implement a JwtUtil class with a method to create JwtAuthentication from claims.
 - Update the authorization service that uses the UserService, JwtProvider, and SecurityContextHolder to implement the following methods:
   - Modify the authorization method so that it now takes a JwtRequest and returns a JwtResponse.
@@ -85,9 +85,9 @@ Use the backend project from the previous week (T04).
   - Create a method to refresh the **refreshToken**, which also takes a refreshToken and returns a JwtResponse.
   - Create a method to get JwtAuthentication.
 - Update the authorization controller by adding or modifying endpoints:
-  - For user authorization;
-  - For updating the **accessToken**;
-  - For updating the **refreshToken**.
+  - for user authorization;
+  - for updating the **accessToken**;
+  - for updating the **refreshToken**.
 - Modify the behavior of the doFilter method in the AuthFilter class:
   - Retrieve the token from the Authorization header, which contains "Bearer {accessToken}".
   - Validate the token using the JwtProvider.
