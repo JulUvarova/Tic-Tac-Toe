@@ -11,6 +11,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GameModel {
     private UUID id = UUID.randomUUID();
-    private BoardModel board;
+    private BoardModel board = new BoardModel();
     private GameStatus status = GameStatus.IN_PROGRESS;
 }

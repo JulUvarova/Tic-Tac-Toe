@@ -1,13 +1,13 @@
 package com.school21.Tic_Tac_Toe.datasource.repository;
 
 import com.school21.Tic_Tac_Toe.datasource.model.GameEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@Controller
+@Component
 public class GameMemStorage {
     private final ConcurrentMap<UUID, GameEntity> storage = new ConcurrentHashMap<>();
 

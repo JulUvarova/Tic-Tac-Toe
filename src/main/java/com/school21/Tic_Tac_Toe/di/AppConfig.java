@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 public class AppConfig {
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public GameMemStorage gameStorage() {
         return new GameMemStorage();
     }
