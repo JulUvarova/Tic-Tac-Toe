@@ -1,0 +1,68 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+}
+.container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #ccc;
+    padding: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.home .welcome-img {
+    width: 200px;
+    margin: 20px 0;
+}
+button {
+    padding: 10px 30px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: none;
+    background: #1976d2;
+    color: #fff;
+    cursor: pointer;
+    margin: 10px;
+}
+button:hover {
+    background: #1565c0;
+}
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    grid-template-rows: repeat(3, 60px);
+    gap: 8px;
+    margin: 30px 0;
+    width: 204px;
+    justify-content: center;
+    align-items: center;
+}
+.cell {
+    width: 60px;
+    height: 60px;
+    background: #e3e3e3;
+    border-radius: 8px;
+    font-size: 2.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.cell:hover {
+    background: #b3e5fc;
+}
+.error-box {
+    background: #ffcdd2;
+    color: #b71c1c;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    font-size: 1.2em;
+    display: inline-block;
+}

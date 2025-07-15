@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Игра Крестики-нолики</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div class="container game">
+    <h2>Игра: <span id="gameId" th:text="${gameId}"></span></h2>
+    <div id="errorBox" class="error-box" style="display:none;"></div>
+    <div id="board" class="board"></div>
+    <button onclick="window.location.href='/'">На главную</button>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const gameId = /*[[${gameId}]]*/ '0';
+    let board = [
+        [0,0,0],
+        [0,0,0],
+        [0,0,0]
+    ];
+    let gameOver = false;
+    function renderBoard() {
+        const boardDiv = document.getElementById('board');
+        boardDiv.innerHTML = '';
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                cell.innerText = board[i][j] === 1 ? 'X' : (board[i][j] === 2 ? 'O' : '');
+                if (!gameOver && board[i][j] === 0) {
+                    cell.onclick = onCellClick;
+                }
+                boardDiv.appendChild(cell);
+            }
+        }
+    }
+    function onCellClick(e) {
+        if (gameOver) return;
+        const row = +e.target.dataset.row;
+        const col = +e.target.dataset.col;
+        if (board[row][col] !== 0) return;
+        board[row][col] = 1;
+        sendMove();
+    }
+    function sendMove() {
+        hideError();
+        fetch(`/game/${gameId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({id: gameId, board: board})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.board) {
+                board = data.board;
+                renderBoard();
+            } else if (data.error) {
+                showError(data.httpStatus + ': ' + data.error);
+            } else {
+                showError('Неизвестная ошибка!');
+            }
+        })
+        .catch(err => showError('Ошибка соединения: ' + err));
+    }
+    function showError(msg) {
+        const box = document.getElementById('errorBox');
+        box.innerText = msg;
+        box.style.display = 'block';
+    }
+    function hideError() {
+        const box = document.getElementById('errorBox');
+        box.style.display = 'none';
+    }
+    renderBoard();
+    /*]]>*/
+</script>
+</body>
+</html> 
