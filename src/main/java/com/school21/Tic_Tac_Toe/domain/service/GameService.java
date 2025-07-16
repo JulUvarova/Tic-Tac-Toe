@@ -25,4 +25,9 @@ public interface GameService {
      * Create new game.
      */
     GameModel createNewGame();
+
+    /**
+     * Find game by id.
+     */
+    GameModel getGameById(UUID id);
 }

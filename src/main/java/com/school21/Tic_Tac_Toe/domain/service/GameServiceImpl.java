@@ -24,13 +24,12 @@ public class GameServiceImpl implements GameService {
         GameModel game = gameRepository.findById(gameId).orElseThrow(() ->
                 new GameNotFoundException(String.format("Invalid game id %s", gameId)));
         game.setBoard(userBoard);
-        game.setStatus(userBoard.checkGameStatus());
-        log.info("User makes a move in game {}, new status: {}", game.getId(), game.getStatus());
-        if (game.getStatus() == GameStatus.IN_PROGRESS) {
+        GameStatus status = userBoard.checkGameStatus();
+        log.info("User makes a move in game {}, new status: {}", game.getId(), status);
+        if (status == GameStatus.IN_PROGRESS) {
             int[] agentMove = MinimaxAgent.getMove(game.getBoard());
             game.getBoard().getMatrix()[agentMove[0]][agentMove[1]] = GameConstant.PLAYER_O;
-            game.setStatus(userBoard.checkGameStatus());
-            log.info("Agent makes a move in game {}, new status: {}", game.getId(), game.getStatus());
+            log.info("Agent makes a move in game {}, new status: {}", game.getId(), game.getBoard().checkGameStatus());
         }
         gameRepository.saveGame(game);
         return game;
@@ -49,7 +48,7 @@ public class GameServiceImpl implements GameService {
         GameModel game = gameRepository.findById(gameId).orElseThrow(() ->
                 new GameNotFoundException(String.format("Invalid game id %s", gameId)));
 
-        return game.getStatus() != GameStatus.IN_PROGRESS;
+        return game.getBoard().checkGameStatus() != GameStatus.IN_PROGRESS;
     }
 
     @Override
@@ -57,6 +56,12 @@ public class GameServiceImpl implements GameService {
         GameModel game = new GameModel();
         gameRepository.saveGame(game);
         return game;
+    }
+
+    @Override
+    public GameModel getGameById(UUID gameId) {
+        return gameRepository.findById(gameId).orElseThrow(() ->
+                new GameNotFoundException(String.format("Invalid game id %s", gameId)));
     }
 
     private boolean isBoardValid(BoardModel prev, BoardModel next) {

@@ -169,4 +169,20 @@ public class GameServiceImplTest {
         game.setBoard(new BoardModel());
         assertFalse(gameService.validateUserBoard(game.getId(), null));
     }
+
+    @Test
+    public void testIsGameOver_False() {
+        game.setStatus(GameStatus.IN_PROGRESS);
+        when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
+
+        assertFalse(gameService.isGameOver(game.getId()));
+    }
+
+    @Test
+    public void testIsGameOver_True() {
+        game.setStatus(GameStatus.O_WINS);
+        when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
+
+        assertTrue(gameService.isGameOver(game.getId()));
+    }
 }

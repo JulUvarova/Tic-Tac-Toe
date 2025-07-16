@@ -12,5 +12,4 @@ import java.util.UUID;
 public class GameModel {
     private UUID id = UUID.randomUUID();
     private BoardModel board = new BoardModel();
-    private GameStatus status = GameStatus.IN_PROGRESS;
 }

@@ -34,8 +34,8 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "Invalid request data")
     })
     @PostMapping("/{id}")
-    public ResponseEntity<Object> makeMove(@PathVariable UUID id,
-                                           @RequestBody GameDto moveRequest) {
+    public ResponseEntity<GameDto> makeMove(@PathVariable UUID id,
+                                            @RequestBody GameDto moveRequest) {
         log.info("User is moving in game {} ...", id);
         GameModel userMove = GameWebMapper.toGameModel(moveRequest);
         // валидация
@@ -60,11 +60,9 @@ public class GameController {
     }
 
     @Operation(summary = "Create new game")
+    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Successful creating")})
     @PostMapping
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successful creating"),
-    })
-    public ResponseEntity<Object> createNewGame() {
+    public ResponseEntity<GameDto> createNewGame() {
         log.info("User is creating new game...");
         GameModel newGameModel = gameService.createNewGame();
         URI location = ServletUriComponentsBuilder
@@ -77,4 +75,20 @@ public class GameController {
                 .header("Content-Type", "application/json")
                 .body(GameWebMapper.toGameDto(newGameModel));
     }
+
+//    @Operation(summary = "Get game by id")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Successful"),
+//            @ApiResponse(responseCode = "404", description = "Game not found")
+//    })
+//    @GetMapping("/{id}")
+//    public ResponseEntity<GameDto> getGameById(@PathVariable UUID id) {
+//        log.info("Finding game {}...", id);
+//        GameModel gameModel = gameService.getGameById(id);
+//
+//        log.info("Game {} is found", id);
+//        return ResponseEntity.ok()
+//                .header("Content-Type", "application/json")
+//                .body(GameWebMapper.toGameDto(gameModel));
+//    }
 }
