@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Крестики-нолики</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<div class="container home">
-    <h1>Добро пожаловать в игру "Крестики-нолики"!</h1>
-    <img src="/images/welcome.png" alt="Welcome" class="welcome-img"/>
-    <button id="startBtn">Старт</button>
-</div>
-<script>
-    document.getElementById('startBtn').onclick = function() {
-        fetch('/game', {method: 'POST'})
-            .then(r => r.json())
-            .then(data => {
-                if (data.id) {
-                    window.location.href = '/game/' + data.id;
-                } else {
-                    alert('Ошибка создания игры!');
-                }
-            });
-    };
-</script>
+    <div class="container">
+        <h1>Добро пожаловать в игру Крестики-нолики!</h1>
+        <img src="/images/welcome.png" alt="Welcome" style="max-width: 300px; display: block; margin: 20px auto;">
+        <form id="startForm">
+            <button type="submit">Старт</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('startForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const response = await fetch('/game', { method: 'POST' });
+            if (response.ok) {
+                const game = await response.json();
+                window.location.href = '/ui/game/' + game.id;
+            } else {
+                alert('Ошибка при создании игры');
+            }
+        });
+    </script>
 </body>
 </html> 

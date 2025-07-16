@@ -1,20 +1,25 @@
 package com.school21.Tic_Tac_Toe.web.controller;
 
+import com.school21.Tic_Tac_Toe.domain.service.GameService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class HomeController {
+@RequestMapping("")
+public class FrontendController {
+
     @GetMapping("/")
     public String home() {
         return "home";
     }
 
-    @GetMapping("/game/{id}")
-    public String game(@PathVariable String id, Model model) {
+    @GetMapping("/ui/game/{id}")
+    public String gamePage(@PathVariable("id") String id, Model model) {
         model.addAttribute("gameId", id);
+        model.addAttribute("player", "X");
         return "game";
     }
 } 

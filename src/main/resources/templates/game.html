@@ -2,81 +2,109 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Игра Крестики-нолики</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <title>Игра № [[${gameId}]]</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .board { display: grid; grid-template-columns: repeat(3, 60px); grid-gap: 5px; margin: 20px auto; }
+        .cell { width: 60px; height: 60px; font-size: 2em; text-align: center; line-height: 60px; border: 1px solid #333; cursor: pointer; background: #fff; }
+        .cell.disabled { background: #eee; cursor: not-allowed; }
+        .error-box { border: 2px solid #f00; color: #f00; padding: 10px; margin: 10px auto; max-width: 300px; display: none; }
+    </style>
 </head>
 <body>
-<div class="container game">
-    <h2>Игра: <span id="gameId" th:text="${gameId}"></span></h2>
-    <div id="errorBox" class="error-box" style="display:none;"></div>
-    <div id="board" class="board"></div>
-    <button onclick="window.location.href='/'">На главную</button>
-</div>
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    const gameId = /*[[${gameId}]]*/ '0';
-    let board = [
-        [0,0,0],
-        [0,0,0],
-        [0,0,0]
-    ];
-    let gameOver = false;
-    function renderBoard() {
-        const boardDiv = document.getElementById('board');
-        boardDiv.innerHTML = '';
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.dataset.row = i;
-                cell.dataset.col = j;
-                cell.innerText = board[i][j] === 1 ? 'X' : (board[i][j] === 2 ? 'O' : '');
-                if (!gameOver && board[i][j] === 0) {
-                    cell.onclick = onCellClick;
-                }
-                boardDiv.appendChild(cell);
+    <div class="container">
+        <h2>Игра № <span id="gameId">[[${gameId}]]</span></h2>
+        <div>Вы играете за <b>Х</b></div>
+        <div id="errorBox" class="error-box"></div>
+        <div id="board" class="board"></div>
+        <button onclick="window.location.href='/'">На главную</button>
+    </div>
+    <script>
+        const gameId = document.getElementById('gameId').textContent;
+        let boardModel = null;
+        let isGameOver = false;
+
+        async function fetchGame() {
+            const res = await fetch(`/game/${gameId}`);
+            if (res.ok) {
+                const game = await res.json();
+                boardModel = game.board;
+                renderBoard();
+            } else {
+                showError('Ошибка загрузки игры');
             }
         }
-    }
-    function onCellClick(e) {
-        if (gameOver) return;
-        const row = +e.target.dataset.row;
-        const col = +e.target.dataset.col;
-        if (board[row][col] !== 0) return;
-        board[row][col] = 1;
-        sendMove();
-    }
-    function sendMove() {
-        hideError();
-        fetch(`/game/${gameId}`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id: gameId, board: board})
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.board) {
-                board = data.board;
-                renderBoard();
-            } else if (data.error) {
-                showError(data.httpStatus + ': ' + data.error);
-            } else {
-                showError('Неизвестная ошибка!');
+
+        function renderBoard() {
+            const boardDiv = document.getElementById('board');
+            boardDiv.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    const val = boardModel[i][j];
+                    if (val === 1) cell.textContent = 'X';
+                    else if (val === 2) cell.textContent = 'O';
+                    else cell.textContent = '';
+                    if (val === 0 && !isGameOver) {
+                        cell.addEventListener('click', () => makeMove(i, j));
+                    } else {
+                        cell.classList.add('disabled');
+                    }
+                    boardDiv.appendChild(cell);
+                }
             }
-        })
-        .catch(err => showError('Ошибка соединения: ' + err));
-    }
-    function showError(msg) {
-        const box = document.getElementById('errorBox');
-        box.innerText = msg;
-        box.style.display = 'block';
-    }
-    function hideError() {
-        const box = document.getElementById('errorBox');
-        box.style.display = 'none';
-    }
-    renderBoard();
-    /*]]>*/
-</script>
+        }
+
+        async function makeMove(i, j) {
+            if (isGameOver) return;
+            // Копируем boardModel и делаем ход
+            const newBoard = boardModel.map(row => row.slice());
+            if (newBoard[i][j] !== 0) return;
+            newBoard[i][j] = 1;
+            const moveReq = { id: gameId, board: newBoard };
+            try {
+                const res = await fetch(`/game/${gameId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(moveReq)
+                });
+                if (res.ok) {
+                    const game = await res.json();
+                    boardModel = game.board;
+                    renderBoard();
+                    hideError();
+                    checkGameOver();
+                } else {
+                    const err = await res.json();
+                    showError(err.error || 'Ошибка хода');
+                }
+            } catch (e) {
+                showError('Ошибка соединения');
+            }
+        }
+
+        function showError(msg) {
+            const box = document.getElementById('errorBox');
+            box.textContent = msg;
+            box.style.display = 'block';
+        }
+        function hideError() {
+            const box = document.getElementById('errorBox');
+            box.style.display = 'none';
+        }
+        function checkGameOver() {
+            // Проверка окончания игры (можно доработать, если API возвращает статус)
+            let x = 0, o = 0, empty = 0;
+            for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+                if (boardModel[i][j] === 1) x++;
+                else if (boardModel[i][j] === 2) o++;
+                else empty++;
+            }
+            if (empty === 0) isGameOver = true;
+        }
+        fetchGame();
+    </script>
 </body>
 </html> 

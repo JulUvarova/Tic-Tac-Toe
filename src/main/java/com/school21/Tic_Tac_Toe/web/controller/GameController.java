@@ -76,19 +76,19 @@ public class GameController {
                 .body(GameWebMapper.toGameDto(newGameModel));
     }
 
-//    @Operation(summary = "Get game by id")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Successful"),
-//            @ApiResponse(responseCode = "404", description = "Game not found")
-//    })
-//    @GetMapping("/{id}")
-//    public ResponseEntity<GameDto> getGameById(@PathVariable UUID id) {
-//        log.info("Finding game {}...", id);
-//        GameModel gameModel = gameService.getGameById(id);
-//
-//        log.info("Game {} is found", id);
-//        return ResponseEntity.ok()
-//                .header("Content-Type", "application/json")
-//                .body(GameWebMapper.toGameDto(gameModel));
-//    }
+    @Operation(summary = "Get game by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "404", description = "Game not found")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<GameDto> getGameById(@PathVariable UUID id) {
+        log.info("Finding game {}...", id);
+        GameModel gameModel = gameService.getGameById(id);
+
+        log.info("Game {} is found", id);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(GameWebMapper.toGameDto(gameModel));
+    }
 }

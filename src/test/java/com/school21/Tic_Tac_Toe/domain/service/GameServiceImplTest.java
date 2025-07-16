@@ -106,7 +106,7 @@ public class GameServiceImplTest {
 
         GameModel result = gameService.getNextMove(game.getId(), userBoard);
 
-        assertEquals(GameStatus.X_WINS, result.getStatus());
+        assertEquals(GameStatus.X_WINS, result.getBoard().checkGameStatus());
         assertArrayEquals(userBoard.getMatrix(), result.getBoard().getMatrix());
     }
 
@@ -172,7 +172,6 @@ public class GameServiceImplTest {
 
     @Test
     public void testIsGameOver_False() {
-        game.setStatus(GameStatus.IN_PROGRESS);
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
         assertFalse(gameService.isGameOver(game.getId()));
@@ -180,7 +179,11 @@ public class GameServiceImplTest {
 
     @Test
     public void testIsGameOver_True() {
-        game.setStatus(GameStatus.O_WINS);
+        game.setBoard(new BoardModel(new int[][]{
+                {1, 1, 1},
+                {0, 0, 0},
+                {0, 0, 0}
+        }));
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
         assertTrue(gameService.isGameOver(game.getId()));
