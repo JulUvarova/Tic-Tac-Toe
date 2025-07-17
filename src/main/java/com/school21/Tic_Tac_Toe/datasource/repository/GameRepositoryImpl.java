@@ -11,21 +11,21 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class InMemGameRepositoryImpl implements GameRepository {
-    private final GameMemStorage gameMemStorage;
+public class GameRepositoryImpl implements GameRepository {
+    private final GameJpaRepository gameRepository;
 
     @Override
-    public void saveGame(GameModel gameModel) {
-        gameMemStorage.saveGame(gameModel.getId(), GameDataMapper.toEntity(gameModel));
+    public void saveGame(GameModel game) {
+        gameRepository.save(GameDataMapper.toEntity(game));
     }
 
     @Override
     public Optional<GameModel> findById(UUID id) {
-        GameEntity game = gameMemStorage.getGame(id);
-        if (game == null) {
+        GameEntity gameEntity = gameRepository.findById(id).orElse(null);
+        if (gameEntity == null) {
             return Optional.empty();
         } else {
-            return Optional.of(GameDataMapper.toModel(game));
+            return Optional.of(GameDataMapper.toModel(gameEntity));
         }
     }
 }

@@ -10,7 +10,7 @@ public class GameDataMapper {
     public static GameEntity toEntity(GameModel gameModel) {
         GameEntity gameEntity = new GameEntity();
         gameEntity.setId(gameModel.getId());
-        gameEntity.setBoard(gameModel.getBoard().getMatrix());
+        gameEntity.setBoard(toBoardEntity(gameModel.getBoard()));
 
         return gameEntity;
     }
@@ -18,8 +18,31 @@ public class GameDataMapper {
     public static GameModel toModel(GameEntity gameEntity) {
         GameModel gameModel = new GameModel();
         gameModel.setId(gameEntity.getId());
-        gameModel.setBoard(new BoardModel(gameEntity.getBoard()));
+        gameModel.setBoard(toBoardModel(gameEntity.getBoard()));
 
         return gameModel;
+    }
+
+    private static String toBoardEntity(BoardModel boardModel) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < boardModel.getMatrix().length; i++) {
+            for (int j = 0; j < boardModel.getMatrix()[i].length; j++) {
+                stringBuilder.append(boardModel.getMatrix()[i][j]);
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private static BoardModel toBoardModel(String boardEntity) {
+        BoardModel boardModel = new BoardModel();
+        int counter = 0;
+        for (int i = 0; i < boardModel.getMatrix().length; i++) {
+            for (int j = 0; j < boardModel.getMatrix()[i].length; j++) {
+                char ch = boardEntity.charAt(counter);
+                boardModel.getMatrix()[i][j] = Character.getNumericValue(ch);
+                counter++;
+            }
+        }
+        return boardModel;
     }
 }
