@@ -1,6 +1,5 @@
 package com.school21.Tic_Tac_Toe.web.controller;
 
-import com.school21.Tic_Tac_Toe.domain.service.GameService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

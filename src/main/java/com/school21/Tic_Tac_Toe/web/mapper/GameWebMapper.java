@@ -1,13 +1,13 @@
 package com.school21.Tic_Tac_Toe.web.mapper;
 
-import com.school21.Tic_Tac_Toe.domain.model.BoardModel;
-import com.school21.Tic_Tac_Toe.domain.model.GameModel;
+import com.school21.Tic_Tac_Toe.domain.model.game.Board;
+import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.web.model.GameDto;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class GameWebMapper {
-    public static GameDto toGameDto(GameModel gameModel) {
+    public static GameDto toGameDto(Game gameModel) {
         GameDto gameDto = new GameDto();
         gameDto.setId(gameModel.getId());
         gameDto.setBoard(deepCopyBoard(gameModel.getBoard().getMatrix()));
@@ -15,10 +15,10 @@ public class GameWebMapper {
         return gameDto;
     }
 
-    public static GameModel toGameModel(GameDto gameDto) {
-        GameModel gameModel = new GameModel();
+    public static Game toGameModel(GameDto gameDto) {
+        Game gameModel = new Game();
         gameModel.setId(gameDto.getId());
-        gameModel.setBoard(new BoardModel(deepCopyBoard(gameDto.getBoard())));
+        gameModel.setBoard(new Board(deepCopyBoard(gameDto.getBoard())));
 
         return gameModel;
     }

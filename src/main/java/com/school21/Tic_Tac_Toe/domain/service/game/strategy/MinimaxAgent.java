@@ -1,19 +1,19 @@
-package com.school21.Tic_Tac_Toe.domain.strategy;
+package com.school21.Tic_Tac_Toe.domain.service.game.strategy;
 
-import com.school21.Tic_Tac_Toe.domain.model.BoardModel;
-import com.school21.Tic_Tac_Toe.domain.model.GameConstant;
-import com.school21.Tic_Tac_Toe.domain.model.GameStatus;
+import com.school21.Tic_Tac_Toe.domain.model.game.Board;
+import com.school21.Tic_Tac_Toe.domain.model.game.GameConstant;
+import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class MinimaxAgent {
-    public static int[] getMove(BoardModel userBoard) {
+    public static int[] getMove(Board userBoard) {
         int[] agentBestMove = null;
         int bestScore = Integer.MAX_VALUE;
         for (int i = 0; i < GameConstant.BOARD_SIDE; i++) {
             for (int j = 0; j < GameConstant.BOARD_SIDE; j++) {
                 if (userBoard.getMatrix()[i][j] == 0) {
-                    BoardModel nextStepBoard = new BoardModel(userBoard);
+                    Board nextStepBoard = new Board(userBoard);
                     nextStepBoard.getMatrix()[i][j] = GameConstant.PLAYER_O;
 
                     int score = minimax(nextStepBoard, 0, true);
@@ -28,7 +28,7 @@ public class MinimaxAgent {
         return agentBestMove;
     }
 
-    private int minimax(BoardModel board, int depth, boolean isMaximizing) {
+    private int minimax(Board board, int depth, boolean isMaximizing) {
         GameStatus status = board.checkGameStatus();
         if (status != GameStatus.IN_PROGRESS) {
             switch (status) {
@@ -49,7 +49,7 @@ public class MinimaxAgent {
             for (int i = 0; i < GameConstant.BOARD_SIDE; i++) {
                 for (int j = 0; j < GameConstant.BOARD_SIDE; j++) {
                     if (board.getMatrix()[i][j] == 0) {
-                        BoardModel nextStepBoard = new BoardModel(board);
+                        Board nextStepBoard = new Board(board);
                         nextStepBoard.getMatrix()[i][j] = GameConstant.PLAYER_X;
                         int score = minimax(nextStepBoard, depth + 1, false);
                         maxScore = Math.max(maxScore, score);
@@ -62,7 +62,7 @@ public class MinimaxAgent {
             for (int i = 0; i < GameConstant.BOARD_SIDE; i++) {
                 for (int j = 0; j < GameConstant.BOARD_SIDE; j++) {
                     if (board.getMatrix()[i][j] == 0) {
-                        BoardModel nextStepBoard = new BoardModel(board);
+                        Board nextStepBoard = new Board(board);
                         nextStepBoard.getMatrix()[i][j] = GameConstant.PLAYER_O;
                         int score = minimax(nextStepBoard, depth + 1, true);
                         minScore = Math.min(minScore, score);

@@ -1,4 +1,4 @@
-package com.school21.Tic_Tac_Toe.domain.model;
+package com.school21.Tic_Tac_Toe.domain.model.game;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardModel {
+public class Board {
     private int[][] matrix = new int[GameConstant.BOARD_SIDE][GameConstant.BOARD_SIDE];
 
-    public BoardModel(BoardModel boardModel) {
+    public Board(Board boardModel) {
         for (int i = 0; i < GameConstant.BOARD_SIDE; i++) {
             for (int j = 0; j < GameConstant.BOARD_SIDE; j++) {
                 this.matrix[i][j] = boardModel.getMatrix()[i][j];

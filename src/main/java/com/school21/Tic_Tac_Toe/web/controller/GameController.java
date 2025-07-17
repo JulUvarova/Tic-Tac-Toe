@@ -1,7 +1,7 @@
 package com.school21.Tic_Tac_Toe.web.controller;
 
-import com.school21.Tic_Tac_Toe.domain.model.GameModel;
-import com.school21.Tic_Tac_Toe.domain.service.GameService;
+import com.school21.Tic_Tac_Toe.domain.model.game.Game;
+import com.school21.Tic_Tac_Toe.domain.service.game.GameService;
 import com.school21.Tic_Tac_Toe.exception.InvalidGameIdException;
 import com.school21.Tic_Tac_Toe.exception.InvalidMoveException;
 import com.school21.Tic_Tac_Toe.web.mapper.GameWebMapper;
@@ -37,7 +37,7 @@ public class GameController {
     public ResponseEntity<GameDto> makeMove(@PathVariable UUID id,
                                             @RequestBody GameDto moveRequest) {
         log.info("User is moving in game {} ...", id);
-        GameModel userMove = GameWebMapper.toGameModel(moveRequest);
+        Game userMove = GameWebMapper.toGameModel(moveRequest);
         // валидация
         if (!id.equals(userMove.getId())) {
             throw new InvalidGameIdException(
@@ -52,7 +52,7 @@ public class GameController {
                     String.format("Invalid user's move in game %s", id));
         }
         // обработка хода
-        GameModel gameResponse = gameService.getNextMove(id, userMove.getBoard());
+        Game gameResponse = gameService.getNextMove(id, userMove.getBoard());
         log.info("Successful moves in game {}", id);
         return ResponseEntity.ok()
                 .header("Content-type", "application/json")
@@ -64,7 +64,7 @@ public class GameController {
     @PostMapping
     public ResponseEntity<GameDto> createNewGame() {
         log.info("User is creating new game...");
-        GameModel newGameModel = gameService.createNewGame();
+        Game newGameModel = gameService.createNewGame();
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -84,7 +84,7 @@ public class GameController {
     @GetMapping("/{id}")
     public ResponseEntity<GameDto> getGameById(@PathVariable UUID id) {
         log.info("Finding game {}...", id);
-        GameModel gameModel = gameService.getGameById(id);
+        Game gameModel = gameService.getGameById(id);
 
         log.info("Game {} is found", id);
         return ResponseEntity.ok()

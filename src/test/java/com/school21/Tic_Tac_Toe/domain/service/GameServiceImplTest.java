@@ -1,11 +1,12 @@
 package com.school21.Tic_Tac_Toe.domain.service;
 
-import com.school21.Tic_Tac_Toe.datasource.repository.GameRepository;
-import com.school21.Tic_Tac_Toe.domain.model.BoardModel;
-import com.school21.Tic_Tac_Toe.domain.model.GameConstant;
-import com.school21.Tic_Tac_Toe.domain.model.GameModel;
-import com.school21.Tic_Tac_Toe.domain.model.GameStatus;
-import com.school21.Tic_Tac_Toe.exception.GameNotFoundException;
+import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepository;
+import com.school21.Tic_Tac_Toe.domain.model.game.Board;
+import com.school21.Tic_Tac_Toe.domain.model.game.GameConstant;
+import com.school21.Tic_Tac_Toe.domain.model.game.Game;
+import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
+import com.school21.Tic_Tac_Toe.domain.service.game.GameServiceImpl;
+import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,30 +29,30 @@ public class GameServiceImplTest {
     @InjectMocks
     private GameServiceImpl gameService;
 
-    private static GameModel game;
-    private BoardModel nextBoard;
+    private static Game game;
+    private Board nextBoard;
 
     @BeforeAll
     static void setUp() {
-        game = new GameModel();
+        game = new Game();
     }
 
     @BeforeEach
     void setUpGame() {
-        nextBoard = new BoardModel();
+        nextBoard = new Board();
     }
 
     @Test
     void getNextMove_AgentMakesMove() {
-        BoardModel userBoard = new BoardModel(new int[][]{
+        Board userBoard = new Board(new int[][]{
                 {1, 0, 0},
                 {0, 0, 0},
                 {0, 0, 0}
         });
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
-        GameModel result = gameService.getNextMove(game.getId(), userBoard);
-        BoardModel resultBoard = result.getBoard();
+        Game result = gameService.getNextMove(game.getId(), userBoard);
+        Board resultBoard = result.getBoard();
         int oCount = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -66,14 +67,14 @@ public class GameServiceImplTest {
 
     @Test
     void getNextMove_AgentMakesMoveAndWin() {
-        BoardModel userBoard = new BoardModel(new int[][]{
+        Board userBoard = new Board(new int[][]{
                 {1, 0, 2},
                 {1, 0, 2},
                 {0, 0, 0}
         });
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
-        GameModel result = gameService.getNextMove(game.getId(), userBoard);
+        Game result = gameService.getNextMove(game.getId(), userBoard);
 
         assertEquals(GameStatus.O_WINS, result.getBoard().checkGameStatus());
         verify(gameRepository).saveGame(game);
@@ -81,14 +82,14 @@ public class GameServiceImplTest {
 
     @Test
     void getNextMove_AgentMakesMoveForDraw() {
-        BoardModel userBoard = new BoardModel(new int[][]{
+        Board userBoard = new Board(new int[][]{
                 {0, 1, 0},
                 {0, 2, 1},
                 {1, 2, 1}
         });
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
-        GameModel result = gameService.getNextMove(game.getId(), userBoard);
+        Game result = gameService.getNextMove(game.getId(), userBoard);
 
         assertEquals(GameConstant.PLAYER_O, result.getBoard().getMatrix()[0][2]);
         assertEquals(GameStatus.IN_PROGRESS, result.getBoard().checkGameStatus());
@@ -97,14 +98,14 @@ public class GameServiceImplTest {
 
     @Test
     void getNextMove_GameOverAfterUserMove() {
-        BoardModel userBoard = new BoardModel(new int[][]{
+        Board userBoard = new Board(new int[][]{
                 {1, 1, 1},
                 {0, 0, 0},
                 {0, 0, 0}
         });
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
-        GameModel result = gameService.getNextMove(game.getId(), userBoard);
+        Game result = gameService.getNextMove(game.getId(), userBoard);
 
         assertEquals(GameStatus.X_WINS, result.getBoard().checkGameStatus());
         assertArrayEquals(userBoard.getMatrix(), result.getBoard().getMatrix());
@@ -114,12 +115,12 @@ public class GameServiceImplTest {
     void getNextMove_InvalidGameId() {
         when(gameRepository.findById(game.getId())).thenReturn(Optional.empty());
 
-        assertThrows(GameNotFoundException.class, () -> gameService.getNextMove(game.getId(), new BoardModel()));
+        assertThrows(EntityNotFoundException.class, () -> gameService.getNextMove(game.getId(), new Board()));
     }
 
     @Test
     public void testIsBoardValid_ValidMove() {
-        game.setBoard(new BoardModel());
+        game.setBoard(new Board());
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
         nextBoard.getMatrix()[0][0] = GameConstant.PLAYER_X;
@@ -129,7 +130,7 @@ public class GameServiceImplTest {
 
     @Test
     public void testIsBoardValid_Invalid_MultipleChanges() {
-        game.setBoard(new BoardModel());
+        game.setBoard(new Board());
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
         nextBoard.getMatrix()[0][0] = GameConstant.PLAYER_X;
@@ -140,7 +141,7 @@ public class GameServiceImplTest {
 
     @Test
     public void testIsBoardValid_Invalid_ChangeOccupiedCell() {
-        game.setBoard(new BoardModel());
+        game.setBoard(new Board());
         game.getBoard().getMatrix()[0][0] = GameConstant.PLAYER_O;
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
@@ -151,7 +152,7 @@ public class GameServiceImplTest {
 
     @Test
     public void testIsBoardValid_Invalid_ChangeToNotPlayerX() {
-        game.setBoard(new BoardModel());
+        game.setBoard(new Board());
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
 
         nextBoard.getMatrix()[0][0] = GameConstant.PLAYER_O;
@@ -166,7 +167,7 @@ public class GameServiceImplTest {
 
         assertFalse(gameService.validateUserBoard(game.getId(), nextBoard));
 
-        game.setBoard(new BoardModel());
+        game.setBoard(new Board());
         assertFalse(gameService.validateUserBoard(game.getId(), null));
     }
 
@@ -179,7 +180,7 @@ public class GameServiceImplTest {
 
     @Test
     public void testIsGameOver_True() {
-        game.setBoard(new BoardModel(new int[][]{
+        game.setBoard(new Board(new int[][]{
                 {1, 1, 1},
                 {0, 0, 0},
                 {0, 0, 0}

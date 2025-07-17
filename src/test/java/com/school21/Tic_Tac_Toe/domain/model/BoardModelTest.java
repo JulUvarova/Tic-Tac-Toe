@@ -1,5 +1,7 @@
 package com.school21.Tic_Tac_Toe.domain.model;
 
+import com.school21.Tic_Tac_Toe.domain.model.game.Board;
+import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -7,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BoardModelTest {
     @Test
     public void testHorizontalWinFirstRowX() {
-        BoardModel board = new BoardModel(new int[][]{
+        Board board = new Board(new int[][]{
                 {1, 1, 1},
                 {2, 0, 2},
                 {0, 0, 0}
@@ -17,7 +19,7 @@ class BoardModelTest {
 
     @Test
     public void testHorizontalWinSecondRowO() {
-        BoardModel board = new BoardModel(new int[][]{
+        Board board = new Board(new int[][]{
                 {1, 0, 1},
                 {2, 2, 2},
                 {0, 1, 0}
@@ -27,7 +29,7 @@ class BoardModelTest {
 
     @Test
     public void testVerticalWinFirstColumnX() {
-        BoardModel board = new BoardModel(new int[][]{
+        Board board = new Board(new int[][]{
                 {1, 2, 0},
                 {1, 2, 0},
                 {1, 0, 0}
@@ -37,7 +39,7 @@ class BoardModelTest {
 
     @Test
     public void testVerticalWinThirdColumnO() {
-        BoardModel board = new BoardModel(new int[][]{
+        Board board = new Board(new int[][]{
                 {0, 1, 2},
                 {0, 1, 2},
                 {1, 0, 2}
@@ -47,7 +49,7 @@ class BoardModelTest {
 
     @Test
     public void testMainDiagonalWinX() {
-        BoardModel board = new BoardModel(new int[][]{
+        Board board = new Board(new int[][]{
                 {1, 2, 0},
                 {0, 1, 2},
                 {0, 0, 1}
@@ -57,7 +59,7 @@ class BoardModelTest {
 
     @Test
     public void testAntiDiagonalWinO() {
-        BoardModel board = new BoardModel(new int[][]{
+        Board board = new Board(new int[][]{
                 {0, 1, 2},
                 {1, 2, 0},
                 {2, 0, 0}
@@ -67,7 +69,7 @@ class BoardModelTest {
 
     @Test
     public void testDraw() {
-        BoardModel board = new BoardModel(new int[][]{
+        Board board = new Board(new int[][]{
                 {1, 2, 1},
                 {2, 1, 1},
                 {2, 1, 2}
@@ -77,7 +79,7 @@ class BoardModelTest {
 
     @Test
     public void testInProgress() {
-        BoardModel board = new BoardModel(new int[][]{
+        Board board = new Board(new int[][]{
                 {1, 0, 2},
                 {0, 1, 0},
                 {0, 0, 0}

@@ -1,10 +1,10 @@
 package com.school21.Tic_Tac_Toe.di;
 
-import com.school21.Tic_Tac_Toe.datasource.repository.GameJpaRepository;
-import com.school21.Tic_Tac_Toe.datasource.repository.GameRepository;
-import com.school21.Tic_Tac_Toe.datasource.repository.GameRepositoryImpl;
-import com.school21.Tic_Tac_Toe.domain.service.GameService;
-import com.school21.Tic_Tac_Toe.domain.service.GameServiceImpl;
+import com.school21.Tic_Tac_Toe.datasource.repository.game.GameJpaRepository;
+import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepository;
+import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepositoryImpl;
+import com.school21.Tic_Tac_Toe.domain.service.game.GameService;
+import com.school21.Tic_Tac_Toe.domain.service.game.GameServiceImpl;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
