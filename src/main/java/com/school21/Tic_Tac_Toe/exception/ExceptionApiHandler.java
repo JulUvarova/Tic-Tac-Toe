@@ -13,7 +13,7 @@ public class ExceptionApiHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFoundException(Exception ex) {
         String message = ex.getMessage();
-        log.warn("Get status 404: {}, {}", ex.getMessage(), ex.getStackTrace());
+        log.warn("Get status 404: {}", ex.getMessage());
         return new ApiError(message, HttpStatus.NOT_FOUND);
     }
 
@@ -21,7 +21,7 @@ public class ExceptionApiHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleInvalidRequestException(Exception ex) {
         String message = ex.getMessage();
-        log.warn("Get status 400: {}, {}", ex.getMessage(), ex.getStackTrace());
+        log.warn("Get status 400: {}", ex.getMessage());
         return new ApiError(message, HttpStatus.BAD_REQUEST);
     }
 
@@ -29,7 +29,15 @@ public class ExceptionApiHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleUnknownException(Exception ex) {
         String message = ex.getMessage();
-        log.warn("Get unexpected error : {}, {}", ex.getMessage(), ex.getStackTrace());
+        log.warn("Get unexpected error: {}, {}", ex.getMessage(), ex.getStackTrace());
         return new ApiError(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidUserDataException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleInvalidUserDataException(Exception ex) {
+        String message = ex.getMessage();
+        log.warn("Get status 401: {}", ex.getMessage());
+        return new ApiError(message, HttpStatus.UNAUTHORIZED);
     }
 }

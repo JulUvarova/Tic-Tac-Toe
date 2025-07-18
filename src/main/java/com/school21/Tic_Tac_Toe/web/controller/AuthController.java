@@ -1,10 +1,12 @@
 package com.school21.Tic_Tac_Toe.web.controller;
 
 import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
+import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
 import com.school21.Tic_Tac_Toe.web.model.SignUpRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,8 +30,8 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Successful"),
             @ApiResponse(responseCode = "400", description = "Invalid request data")
     })
-    @PostMapping("/signup")
-    public ResponseEntity<Boolean> signUp(@RequestBody SignUpRequest signUpRequest) {
+    @PostMapping("/register")
+    public ResponseEntity<Boolean> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
         if (userService.register(signUpRequest.getLogin(), signUpRequest.getPassword())) {
             log.info("User registered successfully");
             return ResponseEntity.ok(true);
@@ -46,16 +48,18 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<UUID> login(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Basic ")) {
+            throw new InvalidUserDataException("Missing or invalid Authorization header");
+        }
         // "Basic base64(login:password)"
         String base64Credentials = authHeader.substring("Basic".length()).trim();
         byte[] decodedBytes = Base64.getDecoder().decode(base64Credentials);
         String credentials = new String(decodedBytes, StandardCharsets.UTF_8);
         String[] parts = credentials.split(":", 2);
-
-        UUID userId = userService.login(parts[0], parts[1]);
-        if (userId != null) {
-            return ResponseEntity.ok(userId);
+        if (parts.length != 2) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        UUID userId = userService.login(parts[0], parts[1]);
+        return ResponseEntity.ok(userId);
     }
 }

@@ -6,6 +6,7 @@ import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
 import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public boolean register(String login, String password) {
@@ -25,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
         User newUser = new User();
         newUser.setLogin(login);
-        newUser.setPassword(password);
+        newUser.setPassword(passwordEncoder.encode(password));
         userRepository.save(newUser);
         return true;
     }
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UUID login(String login, String password) {
         User user = userRepository.findByLogin(login).orElseThrow(() -> new InvalidUserDataException("Invalid login"));
-        if (!password.equals(user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new InvalidUserDataException("Invalid password");
         }
         return user.getId();
