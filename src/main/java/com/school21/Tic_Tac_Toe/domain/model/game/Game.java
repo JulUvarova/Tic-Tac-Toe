@@ -16,6 +16,6 @@ public class Game {
     private UUID playerX;
     private UUID playerO;
 
-    private GameStatus status = GameStatus.IN_PROGRESS;
+    private GameStatus status;
     private UUID currentPlayer;
 }

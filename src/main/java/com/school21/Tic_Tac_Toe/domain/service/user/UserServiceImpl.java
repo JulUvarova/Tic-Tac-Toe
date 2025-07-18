@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean register(String login, String password) {
         if (userRepository.findByLogin(login).isPresent()) {
-            return false;
+            throw new InvalidUserDataException("User already exists");
         }
 
         User newUser = new User();

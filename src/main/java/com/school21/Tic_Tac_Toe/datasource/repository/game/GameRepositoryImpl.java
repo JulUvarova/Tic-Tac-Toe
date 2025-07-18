@@ -3,11 +3,14 @@ package com.school21.Tic_Tac_Toe.datasource.repository.game;
 import com.school21.Tic_Tac_Toe.datasource.mapper.GameDataMapper;
 import com.school21.Tic_Tac_Toe.datasource.model.GameEntity;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
+import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,5 +30,11 @@ public class GameRepositoryImpl implements GameRepository {
         } else {
             return Optional.of(GameDataMapper.toModel(gameEntity));
         }
+    }
+
+    @Override
+    public List<Game> getAvailableGamesForUser(UUID userId) {
+        return gameRepository.getGameEntityByStatusStartsWithAndPlayerONotContainsAndPlayerXNotContains(GameStatus.WAITING, userId, userId)
+                .stream().map(GameDataMapper::toModel).collect(Collectors.toList());
     }
 }

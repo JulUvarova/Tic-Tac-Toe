@@ -20,10 +20,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Отключаем CSRF для REST API
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/auth/register", "/auth/login").permitAll() // Разрешаем регистрацию и логин без авторизации
-                        .anyRequest().authenticated() // Все остальные требуют авторизации
+                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Вставляем ваш фильтр перед стандартным
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

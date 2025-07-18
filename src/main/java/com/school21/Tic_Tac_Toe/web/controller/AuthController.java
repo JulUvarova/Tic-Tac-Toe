@@ -24,7 +24,7 @@ import java.util.UUID;
 public class AuthController {
     private final UserService userService;
 
-    @Operation(summary = "Registrate new user",
+    @Operation(summary = "Register new user",
             description = "Registration method that takes a SignUpRequest and returns a registration success status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful"),
@@ -32,6 +32,7 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity<Boolean> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
+        log.info("New user is registering...");
         if (userService.register(signUpRequest.getLogin(), signUpRequest.getPassword())) {
             log.info("User registered successfully");
             return ResponseEntity.ok(true);
@@ -48,6 +49,8 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<UUID> login(@RequestHeader("Authorization") String authHeader) {
+        log.info("User is authenticating...");
+
         if (authHeader == null || !authHeader.startsWith("Basic ")) {
             throw new InvalidUserDataException("Missing or invalid Authorization header");
         }
@@ -60,6 +63,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         UUID userId = userService.login(parts[0], parts[1]);
+        log.info("User {} {} was authenticated successfully", userId, parts[1]);
         return ResponseEntity.ok(userId);
     }
 }

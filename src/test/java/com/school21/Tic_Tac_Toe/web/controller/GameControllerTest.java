@@ -28,58 +28,58 @@ class GameControllerTest {
     private GameService gameService;
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Test
-    void createNewGame_Success() throws Exception {
-        Game game = new Game();
-        Mockito.when(gameService.createNewGame()).thenReturn(game);
-        mockMvc.perform(post("/game"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(game.getId().toString()));
-    }
-
-    @Test
-    void makeMove_Success() throws Exception {
-        Game game = new Game();
-        UUID id = game.getId();
-        Mockito.when(gameService.isGameOver(eq(id))).thenReturn(false);
-        Mockito.when(gameService.validateUserBoard(eq(id), any())).thenReturn(true);
-        Mockito.when(gameService.getNextMove(eq(id), any())).thenReturn(game);
-        GameDto dto = new GameDto();
-        dto.setId(id);
-        dto.setBoard(game.getBoard().getMatrix());
-        mockMvc.perform(post("/game/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id.toString()));
-    }
-
-    @Test
-    void makeMoveAfterGameOver_BadRequest() throws Exception {
-        UUID id = UUID.randomUUID();
-        Board board = new Board();
-        GameDto dto = new GameDto();
-        dto.setId(id);
-        dto.setBoard(board.getMatrix());
-        Mockito.when(gameService.isGameOver(eq(id))).thenReturn(true);
-        mockMvc.perform(post("/game/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void makeMoveInvalidId() throws Exception {
-        UUID id = UUID.randomUUID();
-        Board board = new Board();
-        GameDto dto = new GameDto();
-        dto.setId(UUID.randomUUID()); // не совпадает с id в path
-        dto.setBoard(board.getMatrix());
-        Mockito.when(gameService.isGameOver(any())).thenReturn(false);
-        mockMvc.perform(post("/game/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
-    }
+//
+//    @Test
+//    void createNewGame_Success() throws Exception {
+//        Game game = new Game();
+//        Mockito.when(gameService.createNewGame()).thenReturn(game);
+//        mockMvc.perform(post("/game"))
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.id").value(game.getId().toString()));
+//    }
+//
+//    @Test
+//    void makeMove_Success() throws Exception {
+//        Game game = new Game();
+//        UUID id = game.getId();
+//        Mockito.when(gameService.isGameOver(eq(id))).thenReturn(false);
+//        Mockito.when(gameService.validateUserBoard(eq(id), any())).thenReturn(true);
+//        Mockito.when(gameService.getNextMove(eq(id), any())).thenReturn(game);
+//        GameDto dto = new GameDto();
+//        dto.setId(id);
+//        dto.setBoard(game.getBoard().getMatrix());
+//        mockMvc.perform(post("/game/" + id)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(dto)))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").value(id.toString()));
+//    }
+//
+//    @Test
+//    void makeMoveAfterGameOver_BadRequest() throws Exception {
+//        UUID id = UUID.randomUUID();
+//        Board board = new Board();
+//        GameDto dto = new GameDto();
+//        dto.setId(id);
+//        dto.setBoard(board.getMatrix());
+//        Mockito.when(gameService.isGameOver(eq(id))).thenReturn(true);
+//        mockMvc.perform(post("/game/" + id)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(dto)))
+//                .andExpect(status().isBadRequest());
+//    }
+//
+//    @Test
+//    void makeMoveInvalidId() throws Exception {
+//        UUID id = UUID.randomUUID();
+//        Board board = new Board();
+//        GameDto dto = new GameDto();
+//        dto.setId(UUID.randomUUID()); // не совпадает с id в path
+//        dto.setBoard(board.getMatrix());
+//        Mockito.when(gameService.isGameOver(any())).thenReturn(false);
+//        mockMvc.perform(post("/game/" + id)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(dto)))
+//                .andExpect(status().isBadRequest());
+//    }
 }

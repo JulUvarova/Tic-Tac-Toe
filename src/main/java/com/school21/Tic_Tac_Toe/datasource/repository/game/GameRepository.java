@@ -2,6 +2,7 @@ package com.school21.Tic_Tac_Toe.datasource.repository.game;
 
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,4 +16,9 @@ public interface GameRepository {
      * A method to get the current game.
      */
     Optional<Game> findById(UUID id);
+
+    /**
+     * A method to get list game with status=WAITING without userId.
+     */
+    List<Game> getAvailableGamesForUser(UUID userId);
 }

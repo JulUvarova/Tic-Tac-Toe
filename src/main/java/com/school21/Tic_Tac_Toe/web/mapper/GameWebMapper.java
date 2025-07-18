@@ -11,6 +11,10 @@ public class GameWebMapper {
         GameDto gameDto = new GameDto();
         gameDto.setId(gameModel.getId());
         gameDto.setBoard(deepCopyBoard(gameModel.getBoard().getMatrix()));
+        gameDto.setPlayerO(gameModel.getPlayerO());
+        gameDto.setPlayerX(gameModel.getPlayerX());
+        gameDto.setStatus(gameModel.getStatus());
+        gameDto.setCurrentPlayer(gameModel.getCurrentPlayer());
 
         return gameDto;
     }
@@ -19,6 +23,10 @@ public class GameWebMapper {
         Game gameModel = new Game();
         gameModel.setId(gameDto.getId());
         gameModel.setBoard(new Board(deepCopyBoard(gameDto.getBoard())));
+        gameModel.setPlayerO(gameDto.getPlayerO());
+        gameModel.setPlayerX(gameDto.getPlayerX());
+        gameModel.setStatus(gameDto.getStatus());
+        gameModel.setCurrentPlayer(gameDto.getCurrentPlayer());
 
         return gameModel;
     }
