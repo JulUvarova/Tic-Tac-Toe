@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface GameJpaRepository extends JpaRepository<GameEntity, UUID> {
-    List<GameEntity> getGameEntityByStatusStartsWithAndPlayerONotContainsAndPlayerXNotContains(GameStatus gameStatus, UUID userId, UUID userId1);
+    List<GameEntity> getGameEntityByStatusAndPlayerONotAndPlayerXNot(GameStatus gameStatus, UUID userId, UUID userId1);
 }

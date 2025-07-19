@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     private String login;
     private String password;
 }

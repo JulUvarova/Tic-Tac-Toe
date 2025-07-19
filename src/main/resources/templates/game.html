@@ -18,15 +18,27 @@
         <div>Вы играете за <b>Х</b></div>
         <div id="errorBox" class="error-box"></div>
         <div id="board" class="board"></div>
-        <button onclick="window.location.href='/'">На главную</button>
+        <button onclick="window.location.href='/ui/menu'">В меню</button>
     </div>
     <script>
+        function authFetch(url, options = {}) {
+            const login = sessionStorage.getItem('authLogin');
+            const password = sessionStorage.getItem('authPassword');
+            if (!login || !password) {
+                window.location.href = '/ui/auth';
+                return Promise.reject('Нет авторизации');
+            }
+            const credentials = btoa(login + ':' + password);
+            options.headers = options.headers || {};
+            options.headers['Authorization'] = 'Basic ' + credentials;
+            return fetch(url, options);
+        }
         const gameId = document.getElementById('gameId').textContent;
         let boardModel = null;
         let isGameOver = false;
 
         async function fetchGame() {
-            const res = await fetch(`/game/${gameId}`);
+            const res = await authFetch(`/game/${gameId}`);
             if (res.ok) {
                 const game = await res.json();
                 boardModel = game.board;
@@ -65,7 +77,7 @@
             newBoard[i][j] = 1;
             const moveReq = { id: gameId, board: newBoard };
             try {
-                const res = await fetch(`/game/${gameId}`, {
+                const res = await authFetch(`/game/${gameId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(moveReq)

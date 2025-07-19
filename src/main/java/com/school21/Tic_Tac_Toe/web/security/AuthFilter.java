@@ -30,16 +30,11 @@ public class AuthFilter extends GenericFilterBean {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        // без авторизации
-        String path = httpRequest.getRequestURI();
-        if (path.startsWith("/auth/register") || path.startsWith("/auth/login")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
         String authHeader = httpRequest.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Basic ")) {
-            throw new InvalidUserDataException("Missing or invalid Authorization header");
+            // пропускаю на усмотрение saecurityConfig - он смотрит по адресам
+            chain.doFilter(request, response);
+            return;
         }
         String base64Credentials = authHeader.substring("Basic".length()).trim();
         byte[] decodedBytes = Base64.getDecoder().decode(base64Credentials);

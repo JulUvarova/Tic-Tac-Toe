@@ -21,4 +21,20 @@ public class FrontendController {
         model.addAttribute("player", "X");
         return "game";
     }
+
+    @GetMapping("/ui/join")
+    public String joinPage() {
+        return "join";
+    }
+
+    @GetMapping("/ui/auth")
+    public String authPage() {
+        return "auth";
+    }
+
+    @GetMapping("/ui/menu")
+    public String menuPage() {
+        return "menu";
+    }
+
 } 

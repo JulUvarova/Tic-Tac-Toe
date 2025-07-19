@@ -7,24 +7,12 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Добро пожаловать в игру Крестики-нолики!</h1>
-        <img src="/images/welcome.png" alt="Welcome" style="max-width: 300px; display: block; margin: 20px auto;">
-        <form id="startForm">
-            <button type="submit">Старт</button>
-        </form>
-    </div>
-    <script>
-        document.getElementById('startForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const response = await fetch('/game', { method: 'POST' });
-            if (response.ok) {
-                const game = await response.json();
-                window.location.href = '/ui/game/' + game.id;
-            } else {
-                alert('Ошибка при создании игры');
-            }
-        });
-    </script>
+<div class="container">
+    <h1>Добро пожаловать в игру Крестики-нолики!</h1>
+    <img src="/images/welcome.png" alt="Welcome" style="max-width: 300px; display: block; margin: 20px auto;">
+    <button style="font-size:2em;padding:20px 40px;margin:40px auto;display:block;" onclick="window.location.href='/ui/auth'">
+        Авторизация
+    </button>
+</div>
 </body>
-</html> 
+</html>

@@ -3,12 +3,17 @@ package com.school21.Tic_Tac_Toe.di;
 import com.school21.Tic_Tac_Toe.datasource.repository.game.GameJpaRepository;
 import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepository;
 import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepositoryImpl;
+import com.school21.Tic_Tac_Toe.datasource.repository.user.UserRepository;
 import com.school21.Tic_Tac_Toe.domain.service.game.GameService;
 import com.school21.Tic_Tac_Toe.domain.service.game.GameServiceImpl;
+import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
+import com.school21.Tic_Tac_Toe.domain.service.user.UserServiceImpl;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class AppConfig {
@@ -16,6 +21,16 @@ public class AppConfig {
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public GameRepository gameRepository(GameJpaRepository gameJpaRepository) {
         return new GameRepositoryImpl(gameJpaRepository);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public UserService userService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return new UserServiceImpl(userRepository, passwordEncoder);
     }
 
     @Bean

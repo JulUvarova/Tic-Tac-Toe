@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Присоединиться к игре</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Доступные игры</h2>
+    <div id="games"></div>
+    <button onclick="window.location.href='/ui/menu'">В меню</button>
+</div>
+<script>
+    function authFetch(url, options = {}) {
+        const login = sessionStorage.getItem('authLogin');
+        const password = sessionStorage.getItem('authPassword');
+        if (!login || !password) {
+            window.location.href = '/ui/auth';
+            return Promise.reject('Нет авторизации');
+        }
+        const credentials = btoa(login + ':' + password);
+        options.headers = options.headers || {};
+        options.headers['Authorization'] = 'Basic ' + credentials;
+        return fetch(url, options);
+    }
+
+    function loadGames() {
+        authFetch('/game')
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(games => {
+                const gamesDiv = document.getElementById('games');
+                gamesDiv.innerHTML = '';
+                if (games.length === 0) {
+                    gamesDiv.innerHTML = '<p>Нет доступных игр</p>';
+                } else {
+                    games.forEach(game => {
+                        const btn = document.createElement('button');
+                        btn.textContent = game.id;
+                        btn.onclick = () => joinGame(game.id);
+                        gamesDiv.appendChild(btn);
+                    });
+                }
+            })
+            .catch(() => alert('Ошибка загрузки игр'));
+    }
+    function joinGame(gameId) {
+        authFetch('/game/' + gameId + '/join', {method: 'POST'})
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(game => window.location.href = '/ui/game/' + game.id)
+            .catch(() => alert('Ошибка присоединения к игре'));
+    }
+    loadGames();
+</script>
+</body>
+</html>

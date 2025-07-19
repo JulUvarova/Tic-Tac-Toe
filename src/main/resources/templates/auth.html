@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .tab-btn { margin: 0 10px; padding: 5px 15px; cursor: pointer; }
+        .tab-btn.active { font-weight: bold; }
+        .error-box { color: #f00; margin: 10px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Вход / Регистрация</h2>
+    <div>
+        <button class="tab-btn active" id="loginTab" onclick="showTab('login')">Вход</button>
+        <button class="tab-btn" id="registerTab" onclick="showTab('register')">Регистрация</button>
+    </div>
+    <button style="font-size:2em;padding:20px 40px;margin:40px auto;display:block;" onclick="window.location.href='/'">
+        На главную
+    </button>
+    <div id="errorBox" class="error-box"></div>
+    <div id="loginForm">
+        <input type="text" id="loginLogin" placeholder="Логин"><br>
+        <input type="password" id="loginPassword" placeholder="Пароль"><br>
+        <button onclick="login()">Войти</button>
+    </div>
+    <div id="registerForm" style="display:none;">
+        <input type="text" id="registerLogin" placeholder="Логин"><br>
+        <input type="password" id="registerPassword" placeholder="Пароль"><br>
+        <button onclick="register()">Зарегистрироваться</button>
+    </div>
+</div>
+<script>
+function showTab(tab) {
+    document.getElementById('loginForm').style.display = tab === 'login' ? '' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+    document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+    document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+    hideError();
+}
+function showError(msg) {
+    document.getElementById('errorBox').textContent = msg;
+}
+function hideError() {
+    document.getElementById('errorBox').textContent = '';
+}
+function login() {
+    const login = document.getElementById('loginLogin').value;
+    const password = document.getElementById('loginPassword').value;
+    if (!login || !password) return showError('Введите логин и пароль');
+    const credentials = btoa(login + ':' + password);
+    fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Authorization': 'Basic ' + credentials }
+    })
+    .then(res => res.ok ? res.json() : res.json().then(e => Promise.reject(e)))
+    .then(() => {
+        sessionStorage.setItem('authLogin', login);
+        sessionStorage.setItem('authPassword', password);
+        window.location.href = '/ui/menu';
+    })
+    .catch(e => showError(e.error || 'Ошибка входа'));
+}
+function register() {
+    const login = document.getElementById('registerLogin').value;
+    const password = document.getElementById('registerPassword').value;
+    if (!login || !password) return showError('Введите логин и пароль');
+    fetch('/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login, password })
+    })
+    .then(res => res.ok ? res.json() : res.json().then(e => Promise.reject(e)))
+    .then(ok => {
+        if (ok) {
+            showTab('login');
+            showError('Регистрация успешна! Теперь войдите.');
+        } else {
+            showError('Пользователь уже существует');
+        }
+    })
+    .catch(e => showError(e.error || 'Ошибка регистрации'));
+}
+</script>
+</body>
+</html> 

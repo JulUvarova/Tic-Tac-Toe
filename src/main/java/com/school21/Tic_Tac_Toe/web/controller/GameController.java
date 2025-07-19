@@ -10,6 +10,7 @@ import com.school21.Tic_Tac_Toe.web.model.OpponentType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "basicAuth")
 @RequestMapping("/game")
 public class GameController {
     private final GameService gameService;

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Меню</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <img src="/images/welcome.png" alt="Welcome" style="max-width: 300px; display: block; margin: 20px auto;">
+    <button onclick="startGame('COMPUTER')">Новая игра: компьютер</button>
+    <button onclick="startGame('USER')">Новая игра: пользователь</button>
+    <button onclick="window.location.href='/ui/join'">Присоединиться</button>
+</div>
+<script>
+    function authFetch(url, options = {}) {
+        const login = sessionStorage.getItem('authLogin');
+        const password = sessionStorage.getItem('authPassword');
+        if (!login || !password) {
+            window.location.href = '/ui/auth';
+            return Promise.reject('Нет авторизации');
+        }
+        const credentials = btoa(login + ':' + password);
+        options.headers = options.headers || {};
+        options.headers['Authorization'] = 'Basic ' + credentials;
+        return fetch(url, options);
+    }
+    function startGame(opponent) {
+        authFetch('/game?opponent=' + opponent, {method: 'POST'})
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(game => window.location.href = '/ui/game/' + game.id)
+            .catch(() => alert('Ошибка создания игры'));
+    }
+</script>
+</body>
+</html> 
