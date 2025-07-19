@@ -64,7 +64,7 @@ public class GameController {
         }
         // обработка хода
         Game gameResponse = gameService.getNextMove(gameId, userMove.getBoard());
-        log.info("Successful moves in game {}", gameId);
+        log.info("Successful moves in game {}", gameResponse);
         return ResponseEntity.ok()
                 .header("Content-type", "application/json")
                 .body(GameWebMapper.toGameDto(gameResponse));

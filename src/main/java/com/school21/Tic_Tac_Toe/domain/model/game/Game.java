@@ -18,4 +18,8 @@ public class Game {
 
     private GameStatus status;
     private UUID currentPlayer;
+
+    public void updateStatus() {
+        status = board.checkGameStatus();
+    }
 }

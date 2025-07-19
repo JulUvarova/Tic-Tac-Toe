@@ -27,14 +27,15 @@ public class GameServiceImpl implements GameService {
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
         game.setBoard(userBoard);
-        GameStatus status = userBoard.checkGameStatus();
-        log.info("User {}  makes a move in game {}, new status: {}", game.getId(), status);
-        if (status == GameStatus.IN_PROGRESS) {
-            if (game.getPlayerO() == GameConstant.AGENT_UUID) {
+        game.updateStatus();
+        log.info("User {}  makes a move in game {}, new status: {}", game.getId(), game.getStatus());
+        if (game.getStatus() == GameStatus.IN_PROGRESS) {
+            if (game.getPlayerO().equals(GameConstant.AGENT_UUID)) {
                 int[] agentMove = MinimaxAgent.getMove(game.getBoard());
                 game.getBoard().getMatrix()[agentMove[0]][agentMove[1]] = GameConstant.PLAYER_O;
                 game.setCurrentPlayer(game.getCurrentPlayer() == game.getPlayerX() ? game.getPlayerO() : game.getPlayerX());
-                log.info("Agent makes a move in game {}, new status: {}", game.getId(), game.getBoard().checkGameStatus());
+                game.updateStatus();
+                log.info("Agent makes a move in game {}, new status: {}", game.getId(), game.getStatus());
             } else {
                 game.setCurrentPlayer(game.getCurrentPlayer() == game.getPlayerX() ? game.getPlayerO() : game.getPlayerX());
                 log.info("New current player {}", game.getCurrentPlayer());
@@ -49,7 +50,7 @@ public class GameServiceImpl implements GameService {
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
 
-        return isBoardValid(game.getBoard(), userBoard, (game.getCurrentPlayer() == game.getPlayerX() ? GameConstant.PLAYER_X : GameConstant.PLAYER_O));
+        return isBoardValid(game.getBoard(), userBoard, 1);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class GameServiceImpl implements GameService {
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
 
-        return game.getBoard().checkGameStatus() != GameStatus.IN_PROGRESS;
+        return game.getStatus() == GameStatus.O_WINS || game.getStatus() == GameStatus.X_WINS;
     }
 
     @Override
