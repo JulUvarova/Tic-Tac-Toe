@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/auth/register", "/auth/login",
-                                "/", "/ui/**", // для фронта
+                                "/", "/ui/**", "/css/**", "/js/**", "/images/**", // для фронта
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**" // для сваггера
                         ).permitAll()
                         .anyRequest().authenticated()

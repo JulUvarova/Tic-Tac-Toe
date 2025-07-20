@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Игра № [[${gameId}]]</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
         .board { display: grid; grid-template-columns: repeat(3, 60px); grid-gap: 5px; margin: 20px auto; }
         .cell { width: 60px; height: 60px; font-size: 2em; text-align: center; line-height: 60px; border: 1px solid #333; cursor: pointer; background: #fff; }
