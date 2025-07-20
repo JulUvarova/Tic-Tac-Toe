@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <h2>Доступные игры</h2>
-    <div id="games"></div>
+    <div id="games" class="games-container"></div>
     <button onclick="window.location.href='/ui/menu'">В меню</button>
 </div>
 <script>
@@ -30,28 +30,39 @@
         authFetch('/game')
             .then(res => res.ok ? res.json() : Promise.reject())
             .then(games => {
-                const gamesDiv = document.getElementById('games');
-                gamesDiv.innerHTML = '';
+                const gamesContainer = document.getElementById('games');
+                gamesContainer.innerHTML = '';
+
                 if (games.length === 0) {
-                    gamesDiv.innerHTML = '<p>Нет доступных игр</p>';
+                    const noGames = document.createElement('div');
+                    noGames.className = 'no-games';
+                    noGames.textContent = 'Нет доступных игр';
+                    gamesContainer.appendChild(noGames);
                 } else {
                     games.forEach(game => {
-                        const btn = document.createElement('button');
-                        btn.textContent = game.id;
-                        btn.onclick = () => joinGame(game.id);
-                        gamesDiv.appendChild(btn);
+                        const gameItem = document.createElement('div');
+                        gameItem.className = 'game-item';
+                        gameItem.textContent = `Игра №${game.id}`;
+                        gameItem.onclick = () => joinGame(game.id);
+                        gamesContainer.appendChild(gameItem);
                     });
                 }
             })
             .catch(() => alert('Ошибка загрузки игр'));
     }
+
     function joinGame(gameId) {
         authFetch('/game/' + gameId + '/join', {method: 'POST'})
             .then(res => res.ok ? res.json() : Promise.reject())
             .then(game => window.location.href = '/ui/game/' + game.id)
             .catch(() => alert('Ошибка присоединения к игре'));
     }
+
+    // Загрузить игры при загрузке страницы
     loadGames();
+
+    // Автообновление списка каждые 5 секунд
+    setInterval(loadGames, 5000);
 </script>
 </body>
 </html>

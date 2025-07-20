@@ -16,7 +16,7 @@ public interface GameService {
     /**
      * A method to validate the current game board (check that previous moves haven't been changed).
      */
-    boolean validateUserBoard(UUID gameId, Board userBoard);
+    boolean validateUserBoard(UUID userId, UUID gameId, Board userBoard);
 
     /**
      * A method to check if the game has ended.

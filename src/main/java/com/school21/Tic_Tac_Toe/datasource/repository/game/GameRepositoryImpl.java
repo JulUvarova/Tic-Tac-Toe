@@ -34,7 +34,7 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public List<Game> getAvailableGamesForUser(UUID userId) {
-        return gameRepository.getGameEntityByStatusAndPlayerONotAndPlayerXNot(GameStatus.WAITING, userId, userId)
+        return gameRepository.getGameEntityByStatusAndPlayerXNot(GameStatus.WAITING, userId)
                 .stream().map(GameDataMapper::toModel).collect(Collectors.toList());
     }
 }

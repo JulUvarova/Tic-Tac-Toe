@@ -15,7 +15,7 @@
 <body>
     <div class="container">
         <h2>Игра № <span id="gameId">[[${gameId}]]</span></h2>
-        <div>Вы играете за <b>Х</b></div>
+        <div id="playersInfo"></div>
         <div id="errorBox" class="error-box"></div>
         <div id="board" class="board"></div>
         <button onclick="window.location.href='/ui/menu'">В меню</button>
@@ -36,16 +36,57 @@
         const gameId = document.getElementById('gameId').textContent;
         let boardModel = null;
         let isGameOver = false;
+        let playerX = null;
+        let playerO = null;
+        let currentPlayer = null;
+        let playerXLogin = null;
+        let playerOLogin = null;
+        let currentPlayerLogin = null;
+        let gameStatus = null;
 
         async function fetchGame() {
             const res = await authFetch(`/game/${gameId}`);
             if (res.ok) {
                 const game = await res.json();
                 boardModel = game.board;
+                playerX = game.playerX;
+                playerO = game.playerO;
+                currentPlayer = game.currentPlayer;
+                gameStatus = game.status;
+                // Получаем логины
+                if (!playerOLogin) {
+                    playerOLogin = await fetchUserLogin(playerO);
+                }
+                if (!playerXLogin) {
+                    playerXLogin = await fetchUserLogin(playerX);
+                }
+                currentPlayerLogin = await fetchUserLogin(currentPlayer);
+                renderPlayersInfo();
                 renderBoard();
+                checkGameOver();
             } else {
                 showError('Ошибка загрузки игры');
             }
+        }
+
+        async function fetchUserLogin(uuid) {
+            if (!uuid) return null;
+            try {
+                const res = await authFetch(`/user/${uuid}`);
+                if (res.ok) {
+                    const user = await res.json();
+                    return user.login;
+                }
+            } catch (e) {}
+            return uuid;
+        }
+
+        function renderPlayersInfo() {
+            const infoDiv = document.getElementById('playersInfo');
+            let x = playerXLogin ? playerXLogin : '—';
+            let o = playerOLogin ? playerOLogin : '—';
+            let cur = currentPlayerLogin ? currentPlayerLogin : '—';
+            infoDiv.innerHTML = `<div>X -> ${x}</div><div>O -> ${o}</div><div>Ход игрока ${cur}</div>`;
         }
 
         function renderBoard() {
@@ -71,10 +112,12 @@
 
         async function makeMove(i, j) {
             if (isGameOver) return;
-            // Копируем boardModel и делаем ход
             const newBoard = boardModel.map(row => row.slice());
             if (newBoard[i][j] !== 0) return;
-            newBoard[i][j] = 1;
+            let value = null;
+            if (currentPlayer === playerX) value = 1;
+            else if (currentPlayer === playerO) value = 2;
+            newBoard[i][j] = value;
             const moveReq = { id: gameId, board: newBoard };
             try {
                 const res = await authFetch(`/game/${gameId}`, {
@@ -85,6 +128,12 @@
                 if (res.ok) {
                     const game = await res.json();
                     boardModel = game.board;
+                    playerX = game.playerX;
+                    playerO = game.playerO;
+                    currentPlayer = game.currentPlayer;
+                    gameStatus = game.status;
+                    currentPlayerLogin = await fetchUserLogin(currentPlayer);
+                    renderPlayersInfo();
                     renderBoard();
                     hideError();
                     checkGameOver();
@@ -107,16 +156,38 @@
             box.style.display = 'none';
         }
         function checkGameOver() {
-            // Проверка окончания игры (можно доработать, если API возвращает статус)
-            let x = 0, o = 0, empty = 0;
-            for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
-                if (boardModel[i][j] === 1) x++;
-                else if (boardModel[i][j] === 2) o++;
-                else empty++;
+            if (!gameStatus) return;
+            if (gameStatus === 'X_WINS') {
+                showError('Победа X!');
+                stopPolling();
+                isGameOver = true;
+                return;
             }
-            if (empty === 0) isGameOver = true;
+            if (gameStatus === 'O_WINS') {
+                showError('Победа O!');
+                stopPolling();
+                isGameOver = true;
+                return;
+            }
+            if (gameStatus === 'DRAW') {
+                showError('Ничья!');
+                stopPolling();
+                isGameOver = true;
+                return;
+            }
+        }
+        let pollingInterval = null;
+
+        function startPolling() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(fetchGame, 1000); // каждую сек
+        }
+
+        function stopPolling() {
+            if (pollingInterval) clearInterval(pollingInterval);
         }
         fetchGame();
+        startPolling();
     </script>
 </body>
-</html> 
+</html>

@@ -55,10 +55,7 @@ public class GameController {
             throw new InvalidMoveException(
                     String.format("Game %s ended", gameId));
         }
-        if (!gameService.getGameById(gameId).getCurrentPlayer().equals(userId)) {
-            throw new InvalidMoveException("Invalid user's queue");
-        }
-        if (!gameService.validateUserBoard(gameId, userMove.getBoard())) {
+        if (!gameService.validateUserBoard(userId, gameId, userMove.getBoard())) {
             throw new InvalidMoveException(
                     String.format("Invalid user's move in game %s", gameId));
         }
@@ -136,7 +133,7 @@ public class GameController {
             throw new InvalidMoveException(
                     String.format("Game %s ended", gameId));
         }
-        Game game = gameService.joinGame(userId, gameId);
+        Game game = gameService.joinGame(gameId, userId);
         log.info("User {} joined game {}", userId, gameId);
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")

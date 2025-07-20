@@ -63,7 +63,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         UUID userId = userService.login(parts[0], parts[1]);
-        log.info("User {} {} was authenticated successfully", userId, parts[1]);
+        log.info("User {} {} was authenticated successfully", userId, parts[0]);
         return ResponseEntity.ok(userId);
     }
 }

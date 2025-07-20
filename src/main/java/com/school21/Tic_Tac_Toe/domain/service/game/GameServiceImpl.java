@@ -28,16 +28,15 @@ public class GameServiceImpl implements GameService {
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
         game.setBoard(userBoard);
         game.updateStatus();
-        log.info("User {}  makes a move in game {}, new status: {}", game.getId(), game.getStatus());
+        log.info("User  makes a move in game {}, new status: {}", game.getId(), game.getStatus());
         if (game.getStatus() == GameStatus.IN_PROGRESS) {
             if (game.getPlayerO().equals(GameConstant.AGENT_UUID)) {
                 int[] agentMove = MinimaxAgent.getMove(game.getBoard());
                 game.getBoard().getMatrix()[agentMove[0]][agentMove[1]] = GameConstant.PLAYER_O;
-                game.setCurrentPlayer(game.getCurrentPlayer() == game.getPlayerX() ? game.getPlayerO() : game.getPlayerX());
                 game.updateStatus();
                 log.info("Agent makes a move in game {}, new status: {}", game.getId(), game.getStatus());
             } else {
-                game.setCurrentPlayer(game.getCurrentPlayer() == game.getPlayerX() ? game.getPlayerO() : game.getPlayerX());
+                game.setCurrentPlayer(game.getCurrentPlayer().equals(game.getPlayerX()) ? game.getPlayerO() : game.getPlayerX());
                 log.info("New current player {}", game.getCurrentPlayer());
             }
         }
@@ -46,11 +45,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public boolean validateUserBoard(UUID gameId, Board userBoard) {
+    public boolean validateUserBoard(UUID userId, UUID gameId, Board userBoard) {
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
-
-        return isBoardValid(game.getBoard(), userBoard, 1);
+        if (!userId.equals(game.getCurrentPlayer()) || game.getStatus() != GameStatus.IN_PROGRESS) {
+            return false;
+        }
+        return isBoardValid(game.getBoard(), userBoard, (game.getCurrentPlayer().equals(game.getPlayerX()) ? GameConstant.PLAYER_X : GameConstant.PLAYER_O));
     }
 
     @Override
@@ -65,10 +66,10 @@ public class GameServiceImpl implements GameService {
     public Game createNewGame(UUID userId, OpponentType opponent) {
         Game game = new Game();
         game.setPlayerX(userId);
+        game.setCurrentPlayer(userId);
         if (opponent == OpponentType.COMPUTER) {
             game.setPlayerO(GameConstant.AGENT_UUID);
             game.setStatus(GameStatus.IN_PROGRESS);
-            game.setCurrentPlayer(userId);
         } else {
             game.setStatus(GameStatus.WAITING);
         }
@@ -86,8 +87,8 @@ public class GameServiceImpl implements GameService {
     public Game joinGame(UUID gameId, UUID userId) {
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
-        if (game.getStatus() != GameStatus.WAITING || game.getPlayerO() != null || game.getPlayerX() == userId) {
-            throw new InvalidGameIdException(String.format("User %d can't join into game %s", userId, gameId));
+        if (game.getStatus() != GameStatus.WAITING || game.getPlayerO() != null || game.getPlayerX().equals(userId)) {
+            throw new InvalidGameIdException(String.format("User %s can't join into game %s", userId, gameId));
         }
         game.setPlayerO(userId);
         game.setCurrentPlayer(game.getPlayerX());
