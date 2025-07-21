@@ -21,9 +21,8 @@ body {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow:
-            0 8px 32px rgba(0, 0, 0, 0.1),
-            inset 0 0 20px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 0 20px rgba(255, 255, 255, 0.3);
     max-width: 500px;
     width: 100%;
     padding: 30px;
@@ -34,7 +33,7 @@ body {
 h1, h2 {
     color: #2c3e50;
     margin-top: 0;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 button {
@@ -48,9 +47,8 @@ button {
     font-size: 1em;
     margin: 10px 5px;
     transition: all 0.3s ease;
-    box-shadow:
-            0 4px 6px rgba(0,0,0,0.05),
-            inset 0 0 10px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05),
+    inset 0 0 10px rgba(255, 255, 255, 0.8);
     position: relative;
     overflow: hidden;
     z-index: 1;
@@ -63,7 +61,7 @@ button::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
     z-index: -1;
     opacity: 0;
     transition: opacity 0.3s;
@@ -71,9 +69,8 @@ button::before {
 
 button:hover {
     transform: translateY(-3px);
-    box-shadow:
-            0 6px 12px rgba(0,0,0,0.1),
-            inset 0 0 10px rgba(255, 255, 255, 0.9);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1),
+    inset 0 0 10px rgba(255, 255, 255, 0.9);
 }
 
 button:hover::before {
@@ -82,9 +79,8 @@ button:hover::before {
 
 button:active {
     transform: translateY(-1px);
-    box-shadow:
-            0 3px 6px rgba(0,0,0,0.1),
-            inset 0 0 15px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1),
+    inset 0 0 15px rgba(255, 255, 255, 0.8);
 }
 
 input {
@@ -96,9 +92,8 @@ input {
     border-radius: 50px;
     font-size: 1em;
     transition: all 0.3s;
-    box-shadow:
-            inset 0 2px 4px rgba(0,0,0,0.05),
-            0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.05);
     color: #2c3e50;
 }
 
@@ -109,9 +104,8 @@ input::placeholder {
 input:focus {
     background: rgba(255, 255, 255, 0.8);
     outline: none;
-    box-shadow:
-            inset 0 2px 4px rgba(0,0,0,0.1),
-            0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .error-box {
@@ -122,9 +116,9 @@ input:focus {
     border-radius: 50px;
     margin: 15px 0;
     font-weight: 600;
-    box-shadow:
-            0 2px 4px rgba(0,0,0,0.05),
-            inset 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 0 10px rgba(255, 255, 255, 0.5);
+    display: none;
 }
 
 .tab-container {
@@ -142,35 +136,33 @@ input:focus {
     font-weight: 500;
     margin: 0 5px;
     transition: all 0.3s;
-    box-shadow:
-            0 2px 4px rgba(0,0,0,0.05),
-            inset 0 0 8px rgba(255, 255, 255, 0.7);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 0 8px rgba(255, 255, 255, 0.7);
 }
 
 .tab-btn.active {
     background: rgba(255, 255, 255, 0.9);
     color: #2c3e50;
     font-weight: 600;
-    box-shadow:
-            0 3px 6px rgba(0,0,0,0.1),
-            inset 0 0 12px rgba(255, 255, 255, 0.9);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1),
+    inset 0 0 12px rgba(255, 255, 255, 0.9);
 }
 
 .board {
     display: grid;
-    grid-template-columns: repeat(3, 80px);
-    grid-template-rows: repeat(3, 80px);
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr); /* Равные доли */
+    gap: 12px;
     margin: 25px auto;
-    justify-content: center;
+    width: 100%; /* Занимает всю ширину */
+    max-width: 500px; /* Максимальная ширина как у контейнера */
 }
 
 .cell {
-    background: rgba(255, 255, 255, 0.7);
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5em;
+    font-size: 3em; /* Увеличим шрифт */
     font-weight: bold;
     border-radius: 15px;
     box-shadow:
@@ -180,14 +172,15 @@ input:focus {
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.4);
     color: #2c3e50;
+    background: rgba(255, 255, 255, 0.3); /* Полупрозрачный фон */
+    aspect-ratio: 1/1; /* Современные браузеры */
 }
 
 .cell:hover:not(.disabled) {
     background: rgba(255, 255, 255, 0.9);
     transform: translateY(-3px);
-    box-shadow:
-            0 5px 15px rgba(0,0,0,0.1),
-            inset 0 0 12px rgba(255, 255, 255, 0.9);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1),
+    inset 0 0 12px rgba(255, 255, 255, 0.9);
 }
 
 .cell.disabled {
@@ -207,9 +200,8 @@ input:focus {
     padding: 15px;
     border-radius: 15px;
     font-weight: 600;
-    box-shadow:
-            0 3px 8px rgba(0,0,0,0.1),
-            inset 0 0 10px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1),
+    inset 0 0 10px rgba(255, 255, 255, 0.8);
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.4);
     color: #2c3e50;
@@ -218,9 +210,8 @@ input:focus {
 .game-item:hover {
     transform: translateY(-3px);
     background: rgba(255, 255, 255, 0.9);
-    box-shadow:
-            0 5px 15px rgba(0,0,0,0.15),
-            inset 0 0 12px rgba(255, 255, 255, 0.9);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15),
+    inset 0 0 12px rgba(255, 255, 255, 0.9);
 }
 
 .no-games {
@@ -234,9 +225,8 @@ input:focus {
 .welcome-image {
     max-width: 100%;
     border-radius: 15px;
-    box-shadow:
-            0 8px 20px rgba(0,0,0,0.1),
-            inset 0 0 10px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1),
+    inset 0 0 10px rgba(255, 255, 255, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
@@ -246,9 +236,8 @@ input:focus {
     border-radius: 50px;
     margin: 8px 0;
     font-weight: 500;
-    box-shadow:
-            0 2px 4px rgba(0,0,0,0.05),
-            inset 0 0 8px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 #playersInfo {
@@ -266,23 +255,41 @@ input:focus {
     background: rgba(255, 255, 255, 0.7);
     color: #2c3e50;
     border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow:
-            0 6px 12px rgba(0,0,0,0.1),
-            inset 0 0 12px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1),
+    inset 0 0 12px rgba(255, 255, 255, 0.8);
 }
 
 .big-button:hover {
     background: rgba(255, 255, 255, 0.9);
     transform: translateY(-5px);
-    box-shadow:
-            0 8px 16px rgba(0,0,0,0.15),
-            inset 0 0 15px rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15),
+    inset 0 0 15px rgba(255, 255, 255, 0.9);
 }
 
 .big-button:active {
     transform: translateY(-2px);
 }
 
+.player-info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 15px 0;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1),
+    inset 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.x { color: #ff3c3c; font-weight: bold; }
+.o { color: #40c057; font-weight: bold; }
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 /* Frosted glass effect for all containers */
 .container, .board, .cell, .game-item, .player-info, .tab-btn, button, .error-box {
     backdrop-filter: blur(8px);

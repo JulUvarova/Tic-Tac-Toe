@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,12 +32,9 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Boolean> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
         log.info("New user is registering...");
-        if (userService.register(signUpRequest.getLogin(), signUpRequest.getPassword())) {
-            log.info("User registered successfully");
-            return ResponseEntity.ok(true);
-        }
-        log.info("User didn't register");
-        return ResponseEntity.badRequest().body(false);
+        userService.register(signUpRequest.getLogin(), signUpRequest.getPassword());
+        log.info("User registered successfully");
+        return ResponseEntity.ok(true);
     }
 
     @Operation(summary = "Authorize user",
@@ -60,7 +56,7 @@ public class AuthController {
         String credentials = new String(decodedBytes, StandardCharsets.UTF_8);
         String[] parts = credentials.split(":", 2);
         if (parts.length != 2) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new InvalidUserDataException("Missing or invalid Authorization header");
         }
         UUID userId = userService.login(parts[0], parts[1]);
         log.info("User {} {} was authenticated successfully", userId, parts[0]);

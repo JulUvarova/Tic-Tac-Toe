@@ -8,7 +8,7 @@ import java.util.UUID;
 public interface UserService {
     UUID login(String username, String password);
 
-    boolean register(String username, String password);
+    void register(String username, String password);
 
     List<User> getAllUsers();
 

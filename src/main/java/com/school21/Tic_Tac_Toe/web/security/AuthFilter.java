@@ -32,7 +32,7 @@ public class AuthFilter extends GenericFilterBean {
 
         String authHeader = httpRequest.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Basic ")) {
-            // пропускаю на усмотрение saecurityConfig - он смотрит по адресам
+            // пропускаю на усмотрение securityConfig - он смотрит по адресам
             chain.doFilter(request, response);
             return;
         }

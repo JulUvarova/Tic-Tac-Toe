@@ -4,6 +4,7 @@ import com.school21.Tic_Tac_Toe.datasource.repository.user.UserRepository;
 import com.school21.Tic_Tac_Toe.domain.model.user.User;
 import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
 import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
+import com.school21.Tic_Tac_Toe.exception.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,16 +21,15 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public boolean register(String login, String password) {
+    public void register(String login, String password) {
         if (userRepository.findByLogin(login).isPresent()) {
-            throw new InvalidUserDataException("User already exists");
+            throw new UserAlreadyExistsException("User already exists");
         }
 
         User newUser = new User();
         newUser.setLogin(login);
         newUser.setPassword(passwordEncoder.encode(password));
         userRepository.save(newUser);
-        return true;
     }
 
     @Override

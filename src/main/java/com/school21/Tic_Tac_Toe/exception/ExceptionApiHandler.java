@@ -61,4 +61,12 @@ public class ExceptionApiHandler {
         log.warn("Get status 401: {}", ex.getMessage());
         return new ApiError(message, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleUserAlreadyExistsException(Exception ex) {
+        String message = ex.getMessage();
+        log.warn("Get status 409: {}", ex.getMessage());
+        return new ApiError(message, HttpStatus.CONFLICT);
+    }
 }
