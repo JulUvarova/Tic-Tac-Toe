@@ -5,7 +5,7 @@ import com.school21.Tic_Tac_Toe.domain.model.game.Board;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GameDataMapperTest {
     @Test

@@ -3,7 +3,6 @@ package com.school21.Tic_Tac_Toe.datasource.mapper;
 import com.school21.Tic_Tac_Toe.datasource.model.GameEntity;
 import com.school21.Tic_Tac_Toe.domain.model.game.Board;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
-import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

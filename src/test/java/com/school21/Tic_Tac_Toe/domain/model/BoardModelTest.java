@@ -4,7 +4,7 @@ import com.school21.Tic_Tac_Toe.domain.model.game.Board;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BoardModelTest {
     @Test

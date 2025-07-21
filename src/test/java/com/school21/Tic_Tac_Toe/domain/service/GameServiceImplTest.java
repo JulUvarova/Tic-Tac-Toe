@@ -1,24 +1,7 @@
 package com.school21.Tic_Tac_Toe.domain.service;
 
-import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepository;
-import com.school21.Tic_Tac_Toe.domain.model.game.Board;
-import com.school21.Tic_Tac_Toe.domain.model.game.GameConstant;
-import com.school21.Tic_Tac_Toe.domain.model.game.Game;
-import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
-import com.school21.Tic_Tac_Toe.domain.service.game.GameServiceImpl;
-import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {

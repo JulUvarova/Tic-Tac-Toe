@@ -26,6 +26,7 @@
         options.headers['Authorization'] = 'Basic ' + credentials;
         return fetch(url, options);
     }
+
     function startGame(opponent) {
         authFetch('/game?opponent=' + opponent, {method: 'POST'})
             .then(res => res.ok ? res.json() : Promise.reject())

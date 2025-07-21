@@ -31,6 +31,7 @@
         options.headers['Authorization'] = 'Basic ' + credentials;
         return fetch(url, options);
     }
+
     const gameId = document.getElementById('gameId').textContent;
     let boardModel = null;
     let isGameOver = false;
@@ -75,7 +76,8 @@
                 const user = await res.json();
                 return user.login;
             }
-        } catch (e) {}
+        } catch (e) {
+        }
         return uuid;
     }
 
@@ -121,11 +123,11 @@
         if (currentPlayer === playerX) value = 1;
         else if (currentPlayer === playerO) value = 2;
         newBoard[i][j] = value;
-        const moveReq = { id: gameId, board: newBoard };
+        const moveReq = {id: gameId, board: newBoard};
         try {
             const res = await authFetch(`/game/${gameId}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(moveReq)
             });
             if (res.ok) {
@@ -154,10 +156,12 @@
         box.textContent = msg;
         box.style.display = 'block';
     }
+
     function hideError() {
         const box = document.getElementById('errorBox');
         box.style.display = 'none';
     }
+
     function checkGameOver() {
         if (!gameStatus) return;
         if (gameStatus === 'X_WINS') {
@@ -179,6 +183,7 @@
             return;
         }
     }
+
     let pollingInterval = null;
 
     function startPolling() {
@@ -189,6 +194,7 @@
     function stopPolling() {
         if (pollingInterval) clearInterval(pollingInterval);
     }
+
     fetchGame();
     startPolling();
 </script>

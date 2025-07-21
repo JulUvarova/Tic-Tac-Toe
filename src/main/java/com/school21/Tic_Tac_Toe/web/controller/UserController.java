@@ -53,7 +53,7 @@ public class UserController {
         log.info("Getting all users...");
         List<UserDto> users = userService.getAllUsers().stream().map(UserWebMapper::toDto).collect(Collectors.toList());
 
-        log.info("Got {} users",users.size());
+        log.info("Got {} users", users.size());
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
                 .body(users);

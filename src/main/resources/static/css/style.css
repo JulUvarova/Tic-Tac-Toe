@@ -165,9 +165,8 @@ input:focus {
     font-size: 3em; /* Увеличим шрифт */
     font-weight: bold;
     border-radius: 15px;
-    box-shadow:
-            0 3px 8px rgba(0,0,0,0.1),
-            inset 0 0 10px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1),
+    inset 0 0 10px rgba(255, 255, 255, 0.8);
     transition: all 0.2s ease;
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -282,14 +281,22 @@ input:focus {
     inset 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
-.x { color: #ff3c3c; font-weight: bold; }
-.o { color: #40c057; font-weight: bold; }
+.x {
+    color: #ff3c3c;
+    font-weight: bold;
+}
+
+.o {
+    color: #40c057;
+    font-weight: bold;
+}
 
 .player-info {
     display: flex;
     align-items: center;
     gap: 5px;
 }
+
 /* Frosted glass effect for all containers */
 .container, .board, .cell, .game-item, .player-info, .tab-btn, button, .error-box {
     backdrop-filter: blur(8px);
