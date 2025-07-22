@@ -1,6 +1,5 @@
 package com.school21.Tic_Tac_Toe.domain.service.game;
 
-import com.school21.Tic_Tac_Toe.domain.model.game.Board;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.web.model.OpponentType;
 
@@ -11,12 +10,12 @@ public interface GameService {
     /**
      * A method to get the next move of the current game using the Minimax algorithm.
      */
-    Game getNextMove(UUID gameId, Board userBoard);
+    Game getNextMove(UUID gameId, int[][] userBoard);
 
     /**
      * A method to validate the current game board (check that previous moves haven't been changed).
      */
-    boolean validateUserBoard(UUID userId, UUID gameId, Board userBoard);
+    boolean validateUserBoard(UUID userId, UUID gameId, int[][] userBoard);
 
     /**
      * A method to check if the game has ended.

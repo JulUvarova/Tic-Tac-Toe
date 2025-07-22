@@ -46,14 +46,6 @@ public class ExceptionApiHandler {
         return new ApiError(message, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleUnknownException(Exception ex) {
-        String message = ex.getMessage();
-        log.warn("Get unexpected error: {}, {}", ex.getMessage(), ex.getStackTrace());
-        return new ApiError(message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(InvalidUserDataException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ApiError handleInvalidUserDataException(Exception ex) {
@@ -68,5 +60,13 @@ public class ExceptionApiHandler {
         String message = ex.getMessage();
         log.warn("Get status 409: {}", ex.getMessage());
         return new ApiError(message, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleUnknownException(Exception ex) {
+        String message = ex.getMessage();
+        log.warn("Get unexpected error: {}, {}", ex.getMessage(), ex.getStackTrace());
+        return new ApiError(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

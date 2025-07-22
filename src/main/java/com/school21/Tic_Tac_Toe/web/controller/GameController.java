@@ -5,12 +5,14 @@ import com.school21.Tic_Tac_Toe.domain.service.game.GameService;
 import com.school21.Tic_Tac_Toe.exception.InvalidGameIdException;
 import com.school21.Tic_Tac_Toe.exception.InvalidMoveException;
 import com.school21.Tic_Tac_Toe.web.mapper.GameWebMapper;
-import com.school21.Tic_Tac_Toe.web.model.GameDto;
+import com.school21.Tic_Tac_Toe.web.model.GameDtoRequest;
+import com.school21.Tic_Tac_Toe.web.model.GameDtoResponse;
 import com.school21.Tic_Tac_Toe.web.model.OpponentType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -40,38 +42,37 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "Invalid request data")
     })
     @PostMapping("/{gameId}")
-    public ResponseEntity<GameDto> makeMove(@PathVariable UUID gameId,
-                                            @RequestBody GameDto moveRequest) {
+    public ResponseEntity<GameDtoResponse> makeMove(@PathVariable UUID gameId,
+                                                   @RequestBody @Valid  GameDtoRequest userMoveRequest) {
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
         log.info("User {} is moving in game {} ...", userId, gameId);
 
-        Game userMove = GameWebMapper.toGameModel(moveRequest);
         // валидация
-        if (!gameId.equals(userMove.getId())) {
+        if (!gameId.equals(userMoveRequest.getId())) {
             throw new InvalidGameIdException(
-                    String.format("Invalid matching game id: request %s, response %s", gameId, userMove.getId()));
+                    String.format("Invalid matching game id: request %s, response %s", gameId, userMoveRequest.getId()));
         }
         if (gameService.isGameOver(gameId)) {
             throw new InvalidMoveException(
                     String.format("Game %s ended", gameId));
         }
-        if (!gameService.validateUserBoard(userId, gameId, userMove.getBoard())) {
+        if (!gameService.validateUserBoard(userId, gameId, userMoveRequest.getBoard())) {
             throw new InvalidMoveException(
                     String.format("Invalid user's move in game %s", gameId));
         }
         // обработка хода
-        Game gameResponse = gameService.getNextMove(gameId, userMove.getBoard());
+        Game gameResponse = gameService.getNextMove(gameId, userMoveRequest.getBoard());
         log.info("Successful moves in game {}", gameResponse);
         return ResponseEntity.ok()
                 .header("Content-type", "application/json")
-                .body(GameWebMapper.toGameDto(gameResponse));
+                .body(GameWebMapper.toGameResponseDto(gameResponse));
     }
 
     @Operation(summary = "Create new game",
             description = "Request param sets opponent's type: COMPUTER or USER")
     @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Successful creating")})
     @PostMapping
-    public ResponseEntity<GameDto> createNewGame(@RequestParam(defaultValue = "COMPUTER") OpponentType opponent) {
+    public ResponseEntity<GameDtoResponse> createNewGame(@RequestParam(defaultValue = "COMPUTER") OpponentType opponent) {
         log.info("User is creating new game with {}...", opponent.name());
 
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
@@ -85,7 +86,7 @@ public class GameController {
         log.info("Created new game {}", newGameModel.getId());
         return ResponseEntity.created(location)
                 .header("Content-Type", "application/json")
-                .body(GameWebMapper.toGameDto(newGameModel));
+                .body(GameWebMapper.toGameResponseDto(newGameModel));
     }
 
     @Operation(summary = "Get game by id")
@@ -94,24 +95,24 @@ public class GameController {
             @ApiResponse(responseCode = "404", description = "Game not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<GameDto> getGameById(@PathVariable UUID id) {
+    public ResponseEntity<GameDtoResponse> getGameById(@PathVariable UUID id) {
         log.info("Finding game {}...", id);
         Game gameModel = gameService.getGameById(id);
 
         log.info("Game {} was found", id);
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
-                .body(GameWebMapper.toGameDto(gameModel));
+                .body(GameWebMapper.toGameResponseDto(gameModel));
     }
 
     @Operation(summary = "Get list of available games",
             description = "Get games with status WAITING and one of player isn't requester")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful")})
     @GetMapping()
-    public ResponseEntity<List<GameDto>> getAvailableGames() {
+    public ResponseEntity<List<GameDtoResponse>> getAvailableGames() {
         log.info("Getting available games...");
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
-        List<GameDto> games = gameService.getAvailableGames(userId).stream().map(GameWebMapper::toGameDto).toList();
+        List<GameDtoResponse> games = gameService.getAvailableGames(userId).stream().map(GameWebMapper::toGameResponseDto).toList();
         log.info("Got {} games", games.size());
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
@@ -126,7 +127,7 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "Invalid request data")
     })
     @PostMapping("/{gameId}/join")
-    public ResponseEntity<GameDto> joinGame(@PathVariable UUID gameId) {
+    public ResponseEntity<GameDtoResponse> joinGame(@PathVariable UUID gameId) {
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
         log.info("User {} is joining game {}...", userId, gameId);
         if (gameService.isGameOver(gameId)) {
@@ -137,7 +138,7 @@ public class GameController {
         log.info("User {} joined game {}", userId, gameId);
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
-                .body(GameWebMapper.toGameDto(game));
+                .body(GameWebMapper.toGameResponseDto(game));
     }
 
     private UUID extractUserId(Authentication authentication) {

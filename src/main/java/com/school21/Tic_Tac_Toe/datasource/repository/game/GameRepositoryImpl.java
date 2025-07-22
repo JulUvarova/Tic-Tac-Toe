@@ -5,6 +5,7 @@ import com.school21.Tic_Tac_Toe.datasource.model.GameEntity;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public List<Game> getAvailableGamesForUser(UUID userId) {
-        return gameRepository.getGameEntityByStatusAndPlayerXNot(GameStatus.WAITING, userId)
+        return gameRepository.getGameEntityByStatusAndPlayerXNot(GameStatus.WAITING, userId, Sort.by(Sort.Direction.ASC, "startTime"))
                 .stream().map(GameDataMapper::toModel).collect(Collectors.toList());
     }
 }

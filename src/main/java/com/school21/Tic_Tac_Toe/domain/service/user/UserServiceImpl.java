@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(String login, String password) {
         if (userRepository.findByLogin(login).isPresent()) {
-            throw new UserAlreadyExistsException("User already exists");
+            throw new UserAlreadyExistsException(String.format("User %s already exists", login));
         }
 
         User newUser = new User();
@@ -34,9 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UUID login(String login, String password) {
-        User user = userRepository.findByLogin(login).orElseThrow(() -> new InvalidUserDataException("Invalid login"));
+        User user = userRepository.findByLogin(login).orElseThrow(() -> new InvalidUserDataException("Invalid credentials"));
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidUserDataException("Invalid password");
+            throw new InvalidUserDataException("Invalid credentials");
         }
         return user.getId();
     }

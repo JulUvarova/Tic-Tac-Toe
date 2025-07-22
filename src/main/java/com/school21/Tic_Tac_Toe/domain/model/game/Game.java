@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -18,6 +19,8 @@ public class Game {
 
     private GameStatus status;
     private UUID currentPlayer;
+
+    private Instant startTime = Instant.now();
 
     public void updateStatus() {
         status = board.checkGameStatus();

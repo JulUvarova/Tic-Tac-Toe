@@ -19,6 +19,7 @@ public class GameDataMapper {
         gameEntity.setPlayerO(gameModel.getPlayerO());
         gameEntity.setStatus(gameModel.getStatus());
         gameEntity.setCurrentPlayer(gameModel.getCurrentPlayer());
+        gameEntity.setStartTime(gameModel.getStartTime());
 
         return gameEntity;
     }
@@ -35,6 +36,7 @@ public class GameDataMapper {
         gameModel.setPlayerO(gameEntity.getPlayerO());
         gameModel.setStatus(gameEntity.getStatus());
         gameModel.setCurrentPlayer(gameEntity.getCurrentPlayer());
+        gameModel.setStartTime(gameEntity.getStartTime());
 
         return gameModel;
     }

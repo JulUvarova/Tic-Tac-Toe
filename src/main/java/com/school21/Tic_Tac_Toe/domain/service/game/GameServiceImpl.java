@@ -1,7 +1,6 @@
 package com.school21.Tic_Tac_Toe.domain.service.game;
 
 import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepository;
-import com.school21.Tic_Tac_Toe.domain.model.game.Board;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameConstant;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
@@ -23,10 +22,10 @@ public class GameServiceImpl implements GameService {
     private final GameRepository gameRepository;
 
     @Override
-    public Game getNextMove(UUID gameId, Board userBoard) {
+    public Game getNextMove(UUID gameId, int[][] userBoard) {
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
-        game.setBoard(userBoard);
+        game.getBoard().setMatrix(userBoard);
         game.updateStatus();
         log.info("User  makes a move in game {}, new status: {}", game.getId(), game.getStatus());
         if (game.getStatus() == GameStatus.IN_PROGRESS) {
@@ -45,13 +44,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public boolean validateUserBoard(UUID userId, UUID gameId, Board userBoard) {
+    public boolean validateUserBoard(UUID userId, UUID gameId, int[][] userBoard) {
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
         if (!userId.equals(game.getCurrentPlayer()) || game.getStatus() != GameStatus.IN_PROGRESS) {
             return false;
         }
-        return isBoardValid(game.getBoard(), userBoard, (game.getCurrentPlayer().equals(game.getPlayerX()) ? GameConstant.PLAYER_X : GameConstant.PLAYER_O));
+        return isBoardValid(game.getBoard().getMatrix(), userBoard, (game.getCurrentPlayer().equals(game.getPlayerX()) ? GameConstant.PLAYER_X : GameConstant.PLAYER_O));
     }
 
     @Override
@@ -102,7 +101,7 @@ public class GameServiceImpl implements GameService {
         return gameRepository.getAvailableGamesForUser(userId);
     }
 
-    private boolean isBoardValid(Board prev, Board next, int player) {
+    private boolean isBoardValid(int[][] prev, int[][] next, int player) {
         if (prev == null || next == null) {
             return false;
         }
@@ -110,9 +109,9 @@ public class GameServiceImpl implements GameService {
         int count = 0;
         for (int i = 0; i < GameConstant.BOARD_SIDE; i++) {
             for (int j = 0; j < GameConstant.BOARD_SIDE; j++) {
-                if (prev.getMatrix()[i][j] != next.getMatrix()[i][j]) {
-                    if (prev.getMatrix()[i][j] != 0
-                            || next.getMatrix()[i][j] != player
+                if (prev[i][j] != next[i][j]) {
+                    if (prev[i][j] != 0
+                            || next[i][j] != player
                             || count > 0) {
                         return false;
                     }

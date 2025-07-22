@@ -1,34 +1,22 @@
 package com.school21.Tic_Tac_Toe.web.mapper;
 
-import com.school21.Tic_Tac_Toe.domain.model.game.Board;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
-import com.school21.Tic_Tac_Toe.web.model.GameDto;
+import com.school21.Tic_Tac_Toe.web.model.GameDtoResponse;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class GameWebMapper {
-    public static GameDto toGameDto(Game gameModel) {
-        GameDto gameDto = new GameDto();
+    public static GameDtoResponse toGameResponseDto(Game gameModel) {
+        GameDtoResponse gameDto = new GameDtoResponse();
         gameDto.setId(gameModel.getId());
         gameDto.setBoard(deepCopyBoard(gameModel.getBoard().getMatrix()));
         gameDto.setPlayerO(gameModel.getPlayerO());
         gameDto.setPlayerX(gameModel.getPlayerX());
         gameDto.setStatus(gameModel.getStatus());
         gameDto.setCurrentPlayer(gameModel.getCurrentPlayer());
+        gameDto.setStartTime(gameModel.getStartTime());
 
         return gameDto;
-    }
-
-    public static Game toGameModel(GameDto gameDto) {
-        Game gameModel = new Game();
-        gameModel.setId(gameDto.getId());
-        gameModel.setBoard(new Board(deepCopyBoard(gameDto.getBoard())));
-        gameModel.setPlayerO(gameDto.getPlayerO());
-        gameModel.setPlayerX(gameDto.getPlayerX());
-        gameModel.setStatus(gameDto.getStatus());
-        gameModel.setCurrentPlayer(gameDto.getCurrentPlayer());
-
-        return gameModel;
     }
 
     private static int[][] deepCopyBoard(int[][] original) {

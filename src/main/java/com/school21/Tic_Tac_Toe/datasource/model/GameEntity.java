@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity(name = "games")
@@ -23,4 +24,7 @@ public class GameEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private GameStatus status;
+
+    @Column(nullable = false)
+    private Instant startTime;
 }
