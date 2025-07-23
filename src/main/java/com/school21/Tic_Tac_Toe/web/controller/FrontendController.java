@@ -37,4 +37,8 @@ public class FrontendController {
         return "menu";
     }
 
+    @GetMapping("/ui/user")
+    public String usersPage() {
+        return "user";
+    }
 } 

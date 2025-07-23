@@ -58,16 +58,13 @@
         })
             .then(async res => {
                 if (res.ok) {
-                    return res.json();
+                    sessionStorage.setItem('authLogin', login);
+                    sessionStorage.setItem('authPassword', password);
+                    window.location.href = '/ui/menu';
                 } else {
                     const err = await res.json();
                     showError(err.error || 'Ошибка входа');
                 }
-            })
-            .then(() => {
-                sessionStorage.setItem('authLogin', login);
-                sessionStorage.setItem('authPassword', password);
-                window.location.href = '/ui/menu';
             })
             .catch(e => showError(e.message));
     }

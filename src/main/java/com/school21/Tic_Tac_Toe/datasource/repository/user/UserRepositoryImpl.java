@@ -4,6 +4,7 @@ import com.school21.Tic_Tac_Toe.datasource.mapper.UserDataMapper;
 import com.school21.Tic_Tac_Toe.datasource.model.UserEntity;
 import com.school21.Tic_Tac_Toe.domain.model.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        return userRepository.findAll().stream().map(UserDataMapper::toModel).collect(Collectors.toList());
+        return userRepository.findAll(Sort.by(Sort.Direction.ASC, "login")).stream().map(UserDataMapper::toModel).collect(Collectors.toList());
     }
 
     @Override

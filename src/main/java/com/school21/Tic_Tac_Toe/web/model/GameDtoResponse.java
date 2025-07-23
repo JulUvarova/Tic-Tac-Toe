@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -18,5 +17,4 @@ public class GameDtoResponse {
     private UUID playerO;
     private GameStatus status;
     private UUID currentPlayer;
-    private Instant startTime;
 }

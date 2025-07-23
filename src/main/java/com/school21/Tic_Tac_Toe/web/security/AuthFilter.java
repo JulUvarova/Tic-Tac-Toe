@@ -32,9 +32,11 @@ public class AuthFilter extends GenericFilterBean {
 
         String authHeader = httpRequest.getHeader("Authorization");
         if (
-                "/auth/register".equals(httpRequest.getRequestURI()) || "/auth/login".equals(httpRequest.getRequestURI())
-                ||
-                        authHeader == null || !authHeader.startsWith("Basic ")) {
+                "/auth/register".equals(httpRequest.getRequestURI())
+                        || "/auth/login".equals(httpRequest.getRequestURI())
+                        || authHeader == null
+                        || !authHeader.startsWith("Basic ")
+        ) {
             // пропускаю на усмотрение securityConfig - он смотрит по адресам
             chain.doFilter(request, response);
             return;

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список пользователей</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h2>Список пользователей</h2>
+    <div id="users" class="games-container"></div>
+    <button onclick="window.location.href='/ui/menu'">В меню</button>
+</div>
+<script>
+    function authFetch(url, options = {}) {
+        const login = sessionStorage.getItem('authLogin');
+        const password = sessionStorage.getItem('authPassword');
+        if (!login || !password) {
+            window.location.href = '/ui/auth';
+            return Promise.reject('Нет авторизации');
+        }
+        const credentials = btoa(login + ':' + password);
+        options.headers = options.headers || {};
+        options.headers['Authorization'] = 'Basic ' + credentials;
+        return fetch(url, options);
+    }
+
+    function loadUsers() {
+        authFetch('/user')
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(users => {
+                const usersContainer = document.getElementById('users');
+                usersContainer.innerHTML = '';
+
+                if (users.length === 0) {
+                    const noUsers = document.createElement('div');
+                    noUsers.className = 'no-users';
+                    noUsers.textContent = 'Нет зарегистрированных пользователей';
+                    usersContainer.appendChild(noUsers);
+                } else {
+                    users.forEach(user => {
+                        const userItem = document.createElement('div');
+                        userItem.className = 'user-item';
+                        userItem.textContent = `${user.login}`;
+                        //  потом для статистики по челу
+                        // userItem.onclick = () => showUser(user.id);
+                        usersContainer.appendChild(userItem);
+                    });
+                }
+            })
+            .catch(() => alert('Ошибка загрузки списка пользователей'));
+    }
+
+    // function showUser(userId) {
+    //     authFetch('/user/' + userId, {method: 'GET'})
+    //         .then(res => res.ok ? res.json() : Promise.reject())
+    //         .then(user => window.location.href = '/ui/user/' + user.id)
+    //         .catch(() => alert('Ошибка доступа к карточке игрока'));
+    // }
+
+    loadUsers();
+    setInterval(loadGames, 5000);
+
+</script>
+</body>
+</html>
