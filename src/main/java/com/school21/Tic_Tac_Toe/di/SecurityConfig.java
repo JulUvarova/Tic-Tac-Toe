@@ -18,6 +18,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable) // убираем сессионку
+//                .httpBasic(AbstractHttpConfigurer::disable)
+//                .formLogin(AbstractHttpConfigurer::disable)
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/auth/register", "/auth/login",
@@ -25,8 +28,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**" // для сваггера
                         ).permitAll()
                         .anyRequest().authenticated()
-                )
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+                );
 
         return http.build();
     }
