@@ -7,6 +7,9 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<button class="profile-btn" title="Мой профиль" onclick="goToMyProfile()">
+    <span class="profile-icon">👤</span>
+</button>
 <div class="container">
     <h2>Игра № <span id="gameId">[[${gameId}]]</span></h2>
 
@@ -193,6 +196,21 @@
 
     function stopPolling() {
         if (pollingInterval) clearInterval(pollingInterval);
+    }
+
+    function goToMyProfile() {
+        const userId = sessionStorage.getItem('userId');
+        if (userId) {
+            window.location.href = '/ui/user/' + userId;
+        } else {
+            authFetch('/user/me')
+                .then(res => res.ok ? res.json() : Promise.reject())
+                .then(user => {
+                    sessionStorage.setItem('userId', user.id);
+                    window.location.href = '/ui/user/' + user.id;
+                })
+                .catch(() => alert('Ошибка получения профиля пользователя.'));
+        }
     }
 
     fetchGame();

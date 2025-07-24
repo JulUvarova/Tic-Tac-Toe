@@ -97,8 +97,18 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Game> getAvailableGames(UUID userId) {
+    public List<Game> getAvailableGamesforUserId(UUID userId) {
         return gameRepository.getAvailableGamesForUser(userId);
+    }
+
+    @Override
+    public List<Game> getCurrentGamesByUserId(UUID userId) {
+        return gameRepository.getCurrentGamesByUserId(userId);
+    }
+
+    @Override
+    public List<Game> getCompletedGamesByUserId(UUID userId) {
+        return gameRepository.getCompletedGamesByUserId(userId);
     }
 
     private boolean isBoardValid(int[][] prev, int[][] next, int player) {

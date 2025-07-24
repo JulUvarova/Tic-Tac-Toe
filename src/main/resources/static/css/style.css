@@ -297,6 +297,28 @@ input:focus {
     gap: 5px;
 }
 
+.profile-btn {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+.profile-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    color: #2c3e50;
+}
+
 /* Frosted glass effect for all containers */
 .container, .board, .cell, .game-item, .player-info, .tab-btn, button, .error-box {
     backdrop-filter: blur(8px);

@@ -40,5 +40,15 @@ public interface GameService {
     /**
      * A method to get list of available (WAITING) games. It excludes games with userId
      */
-    List<Game> getAvailableGames(UUID userId);
+    List<Game> getAvailableGamesforUserId(UUID userId);
+
+    /**
+     * A method to get list of current (WAITING, IN_PROGRESS) games for user with userId
+     */
+    List<Game> getCurrentGamesByUserId(UUID userId);
+
+    /**
+     * A method to get list of completed (O_WINS, X_WINS, DRAW) games for user with userId
+     */
+    List<Game> getCompletedGamesByUserId(UUID userId);
 }

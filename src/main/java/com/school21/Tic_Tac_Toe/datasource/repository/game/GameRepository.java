@@ -21,4 +21,14 @@ public interface GameRepository {
      * A method to get list game with status=WAITING without userId.
      */
     List<Game> getAvailableGamesForUser(UUID userId);
+
+    /**
+     * A method to get list of current (WAITING, IN_PROGRESS) games for user with userId
+     */
+    List<Game> getCurrentGamesByUserId(UUID userId);
+
+    /**
+     * A method to get list of completed (O_WINS, X_WINS, DRAW) games for user with userId
+     */
+    List<Game> getCompletedGamesByUserId(UUID userId);
 }

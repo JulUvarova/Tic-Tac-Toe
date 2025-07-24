@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Присоединиться к игре</title>
+    <title>Список пользователей</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
@@ -11,8 +11,8 @@
     <span class="profile-icon">👤</span>
 </button>
 <div class="container">
-    <h2>Доступные игры</h2>
-    <div id="games" class="games-container"></div>
+    <h2>Список пользователей</h2>
+    <div id="users" class="games-container"></div>
     <button onclick="window.location.href='/ui/menu'">В меню</button>
 </div>
 <script>
@@ -29,36 +29,36 @@
         return fetch(url, options);
     }
 
-    function loadGames() {
-        authFetch('/game')
+    function loadUsers() {
+        authFetch('/user')
             .then(res => res.ok ? res.json() : Promise.reject())
-            .then(games => {
-                const gamesContainer = document.getElementById('games');
-                gamesContainer.innerHTML = '';
+            .then(users => {
+                const usersContainer = document.getElementById('users');
+                usersContainer.innerHTML = '';
 
-                if (games.length === 0) {
-                    const noGames = document.createElement('div');
-                    noGames.className = 'no-games';
-                    noGames.textContent = 'Нет доступных игр';
-                    gamesContainer.appendChild(noGames);
+                if (users.length === 0) {
+                    const noUsers = document.createElement('div');
+                    noUsers.className = 'no-users';
+                    noUsers.textContent = 'Нет зарегистрированных пользователей';
+                    usersContainer.appendChild(noUsers);
                 } else {
-                    games.forEach(game => {
-                        const gameItem = document.createElement('div');
-                        gameItem.className = 'game-item';
-                        gameItem.textContent = `Игра №${game.id}`;
-                        gameItem.onclick = () => joinGame(game.id);
-                        gamesContainer.appendChild(gameItem);
+                    users.forEach(user => {
+                        const userItem = document.createElement('div');
+                        userItem.className = 'game-item';
+                        userItem.textContent = `${user.login}`;
+                        userItem.onclick = () => showUser(user.id);
+                        usersContainer.appendChild(userItem);
                     });
                 }
             })
-            .catch(() => alert('Ошибка загрузки игр'));
+            .catch(() => alert('Ошибка загрузки списка пользователей'));
     }
 
-    function joinGame(gameId) {
-        authFetch('/game/' + gameId + '/join', {method: 'POST'})
+    function showUser(userId) {
+        authFetch('/user/' + userId, {method: 'GET'})
             .then(res => res.ok ? res.json() : Promise.reject())
-            .then(game => window.location.href = '/ui/game/' + game.id)
-            .catch(() => alert('Ошибка присоединения к игре'));
+            .then(user => window.location.href = '/ui/user/' + user.id)
+            .catch(() => alert('Ошибка доступа к карточке игрока'));
     }
 
     function goToMyProfile() {
@@ -76,7 +76,7 @@
         }
     }
 
-    loadGames();
+    loadUsers();
     setInterval(loadGames, 5000);
 
 </script>

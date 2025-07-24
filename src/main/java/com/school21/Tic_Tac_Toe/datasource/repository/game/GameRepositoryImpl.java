@@ -35,7 +35,34 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public List<Game> getAvailableGamesForUser(UUID userId) {
-        return gameRepository.getGameEntityByStatusAndPlayerXNot(GameStatus.WAITING, userId, Sort.by(Sort.Direction.ASC, "startTime"))
-                .stream().map(GameDataMapper::toModel).collect(Collectors.toList());
+        return gameRepository.getGameEntityByStatusAndPlayerXNot(
+                        GameStatus.WAITING,
+                        userId,
+                        Sort.by(Sort.Direction.ASC, "startTime"))
+                .stream()
+                .map(GameDataMapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Game> getCurrentGamesByUserId(UUID userId) {
+        return gameRepository.findGamesByStatusInAndPlayer(
+                        List.of(GameStatus.WAITING, GameStatus.IN_PROGRESS),
+                        userId,
+                        Sort.by(Sort.Direction.ASC, "startTime"))
+                .stream()
+                .map(GameDataMapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Game> getCompletedGamesByUserId(UUID userId) {
+        return gameRepository.findGamesByStatusInAndPlayer(
+                        List.of(GameStatus.DRAW, GameStatus.O_WINS, GameStatus.X_WINS),
+                        userId,
+                        Sort.by(Sort.Direction.ASC, "startTime"))
+                .stream()
+                .map(GameDataMapper::toModel)
+                .collect(Collectors.toList());
     }
 }

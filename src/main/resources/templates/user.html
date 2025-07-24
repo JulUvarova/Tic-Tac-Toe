@@ -2,17 +2,28 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Список пользователей</title>
+    <title>Профиль пользователя</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<button class="profile-btn" title="Мой профиль" onclick="goToMyProfile()">
+    <span class="profile-icon">👤</span>
+</button>
 <div class="container">
-    <h2>Список пользователей</h2>
-    <div id="users" class="games-container"></div>
+    <h2>Профиль пользователя</h2>
+    <div id="user-info" class="player-info-container"></div>
+    <div class="tab-container">
+        <button id="completed-btn" class="tab-btn" onclick="toggleGames('completed')">Завершённые игры</button>
+        <button id="current-btn" class="tab-btn" onclick="toggleGames('current')">Текущие игры</button>
+    </div>
+    <div id="completed-games" class="games-container" style="display:none;"></div>
+    <div id="current-games" class="games-container" style="display:none;"></div>
     <button onclick="window.location.href='/ui/menu'">В меню</button>
 </div>
 <script>
+    const userId = (window.location.pathname.match(/\/ui\/user\/([\w-]+)/) || [])[1];
+
     function authFetch(url, options = {}) {
         const login = sessionStorage.getItem('authLogin');
         const password = sessionStorage.getItem('authPassword');
@@ -26,42 +37,79 @@
         return fetch(url, options);
     }
 
-    function loadUsers() {
-        authFetch('/user')
+    function loadUser() {
+        authFetch('/user/' + userId)
             .then(res => res.ok ? res.json() : Promise.reject())
-            .then(users => {
-                const usersContainer = document.getElementById('users');
-                usersContainer.innerHTML = '';
+            .then(user => {
+                const info = document.getElementById('user-info');
+                info.innerHTML = `<div class='player-info'><b>Логин:</b> ${user.login}</div><div class='player-info'><b>ID:</b> ${user.id}</div>`;
+            })
+            .catch(() => {
+                document.getElementById('user-info').innerHTML = '<div class="error-box" style="display:block">Ошибка загрузки пользователя</div>';
+            });
+    }
 
-                if (users.length === 0) {
-                    const noUsers = document.createElement('div');
-                    noUsers.className = 'no-users';
-                    noUsers.textContent = 'Нет зарегистрированных пользователей';
-                    usersContainer.appendChild(noUsers);
+    function loadGames(type) {
+        // type: 'completed' | 'current'
+        const status = type === 'completed' ? 'COMPLETED' : 'CURRENT';
+        authFetch(`/game/player/${userId}?type=${status}`)
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(games => {
+                const container = document.getElementById(type + '-games');
+                container.innerHTML = '';
+                if (games.length === 0) {
+                    const noGames = document.createElement('div');
+                    noGames.className = 'no-games';
+                    noGames.textContent = 'Нет игр';
+                    container.appendChild(noGames);
                 } else {
-                    users.forEach(user => {
-                        const userItem = document.createElement('div');
-                        userItem.className = 'user-item';
-                        userItem.textContent = `${user.login}`;
-                        //  потом для статистики по челу
-                        // userItem.onclick = () => showUser(user.id);
-                        usersContainer.appendChild(userItem);
+                    games.forEach(game => {
+                        const gameItem = document.createElement('div');
+                        gameItem.className = 'game-item';
+                        gameItem.textContent = `Игра №${game.id} (${game.status})`;
+                        gameItem.onclick = () => window.location.href = '/ui/game/' + game.id;
+                        container.appendChild(gameItem);
                     });
                 }
             })
-            .catch(() => alert('Ошибка загрузки списка пользователей'));
+            .catch(() => {
+                const container = document.getElementById(type + '-games');
+                container.innerHTML = '<div class="error-box" style="display:block">Ошибка загрузки игр</div>';
+            });
     }
 
-    // function showUser(userId) {
-    //     authFetch('/user/' + userId, {method: 'GET'})
-    //         .then(res => res.ok ? res.json() : Promise.reject())
-    //         .then(user => window.location.href = '/ui/user/' + user.id)
-    //         .catch(() => alert('Ошибка доступа к карточке игрока'));
-    // }
+    function toggleGames(type) {
+        const btn = document.getElementById(type + '-btn');
+        const container = document.getElementById(type + '-games');
+        const isActive = btn.classList.contains('active');
+        // Скрыть оба
+        document.getElementById('completed-btn').classList.remove('active');
+        document.getElementById('current-btn').classList.remove('active');
+        document.getElementById('completed-games').style.display = 'none';
+        document.getElementById('current-games').style.display = 'none';
+        if (!isActive) {
+            btn.classList.add('active');
+            container.style.display = 'flex';
+            loadGames(type);
+        }
+    }
 
-    loadUsers();
-    setInterval(loadGames, 5000);
+    function goToMyProfile() {
+        const userId = sessionStorage.getItem('userId');
+        if (userId) {
+            window.location.href = '/ui/user/' + userId;
+        } else {
+            authFetch('/user/me')
+                .then(res => res.ok ? res.json() : Promise.reject())
+                .then(user => {
+                    sessionStorage.setItem('userId', user.id);
+                    window.location.href = '/ui/user/' + user.id;
+                })
+                .catch(() => alert('Ошибка получения профиля пользователя.'));
+        }
+    }
 
+    loadUser();
 </script>
 </body>
 </html>

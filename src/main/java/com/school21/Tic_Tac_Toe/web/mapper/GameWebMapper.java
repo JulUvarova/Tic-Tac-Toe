@@ -14,6 +14,7 @@ public class GameWebMapper {
         gameDto.setPlayerX(gameModel.getPlayerX());
         gameDto.setStatus(gameModel.getStatus());
         gameDto.setCurrentPlayer(gameModel.getCurrentPlayer());
+        gameDto.setStartTime(gameModel.getStartTime());
 
         return gameDto;
     }

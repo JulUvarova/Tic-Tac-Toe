@@ -7,6 +7,9 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<button class="profile-btn" title="Мой профиль" onclick="goToMyProfile()">
+    <span class="profile-icon">👤</span>
+</button>
 <div class="container">
     <h2>Меню</h2>
     <button onclick="startGame('COMPUTER')">Новая игра: компьютер</button>
@@ -33,6 +36,13 @@
             .then(res => res.ok ? res.json() : Promise.reject())
             .then(game => window.location.href = '/ui/game/' + game.id)
             .catch(() => alert('Ошибка создания игры'));
+    }
+
+    function goToMyProfile() {
+        const userId = sessionStorage.getItem('userId');
+        if (userId) {
+            window.location.href = '/ui/user/' + userId;
+        }
     }
 </script>
 </body>

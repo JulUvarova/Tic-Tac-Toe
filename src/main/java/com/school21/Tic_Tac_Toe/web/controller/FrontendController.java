@@ -22,6 +22,12 @@ public class FrontendController {
         return "game";
     }
 
+    @GetMapping("/ui/user/{id}")
+    public String userPage(@PathVariable("id") String id, Model model) {
+        model.addAttribute("userId", id);
+        return "user";
+    }
+
     @GetMapping("/ui/join")
     public String joinPage() {
         return "join";
@@ -39,6 +45,6 @@ public class FrontendController {
 
     @GetMapping("/ui/user")
     public String usersPage() {
-        return "user";
+        return "users";
     }
 } 

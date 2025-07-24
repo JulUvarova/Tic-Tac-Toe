@@ -7,6 +7,7 @@ import com.school21.Tic_Tac_Toe.exception.InvalidMoveException;
 import com.school21.Tic_Tac_Toe.web.mapper.GameWebMapper;
 import com.school21.Tic_Tac_Toe.web.model.GameDtoRequest;
 import com.school21.Tic_Tac_Toe.web.model.GameDtoResponse;
+import com.school21.Tic_Tac_Toe.web.model.GameStatusType;
 import com.school21.Tic_Tac_Toe.web.model.OpponentType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,7 +44,7 @@ public class GameController {
     })
     @PostMapping("/{gameId}")
     public ResponseEntity<GameDtoResponse> makeMove(@PathVariable UUID gameId,
-                                                   @RequestBody @Valid  GameDtoRequest userMoveRequest) {
+                                                    @RequestBody @Valid GameDtoRequest userMoveRequest) {
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
         log.info("User {} is moving in game {} ...", userId, gameId);
 
@@ -109,11 +110,27 @@ public class GameController {
             description = "Get games with status WAITING and one of player isn't requester")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful")})
     @GetMapping()
-    public ResponseEntity<List<GameDtoResponse>> getAvailableGames() {
+    public ResponseEntity<List<GameDtoResponse>> getGamesList() {
         log.info("Getting available games...");
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
-        List<GameDtoResponse> games = gameService.getAvailableGames(userId).stream().map(GameWebMapper::toGameResponseDto).toList();
+        List<GameDtoResponse> games = gameService.getAvailableGamesforUserId(userId)
+                .stream()
+                .map(GameWebMapper::toGameResponseDto)
+                .toList();
         log.info("Got {} games", games.size());
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(games);
+    }
+
+    @Operation(summary = "Get user's games",
+            description = "Get CURRENT (with status IN_PROGRESS, WAITING) or COMPLETED (with status O_WIN, X_WIN or DRAW) games, where user is player")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful")})
+    @GetMapping("/player/{userId}")
+    public ResponseEntity<List<GameDtoResponse>> getGamesList(@RequestParam(defaultValue = "CURRENT") GameStatusType type, @PathVariable UUID userId) {
+        log.info("Getting {} games...", type);
+        List<GameDtoResponse> games = findGames(type, userId);
+        log.info("Got {} {} games", games.size(), type);
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
                 .body(games);
@@ -143,5 +160,15 @@ public class GameController {
 
     private UUID extractUserId(Authentication authentication) {
         return (UUID) authentication.getPrincipal();
+    }
+
+    private List<GameDtoResponse> findGames(GameStatusType type, UUID userId) {
+        List<Game> games = List.of();
+        switch (type) {
+            case CURRENT -> games = gameService.getCurrentGamesByUserId(userId);
+            case COMPLETED -> games = gameService.getCompletedGamesByUserId(userId);
+        }
+
+        return games.stream().map(GameWebMapper::toGameResponseDto).toList();
     }
 }

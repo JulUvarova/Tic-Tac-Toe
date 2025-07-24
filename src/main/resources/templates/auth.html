@@ -60,6 +60,8 @@
                 if (res.ok) {
                     sessionStorage.setItem('authLogin', login);
                     sessionStorage.setItem('authPassword', password);
+                    const userId = await res.json();
+                    sessionStorage.setItem('userId', userId);
                     window.location.href = '/ui/menu';
                 } else {
                     const err = await res.json();
