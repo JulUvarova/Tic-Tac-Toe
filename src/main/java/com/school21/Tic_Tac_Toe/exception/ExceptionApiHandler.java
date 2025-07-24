@@ -1,6 +1,7 @@
 package com.school21.Tic_Tac_Toe.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -60,6 +61,14 @@ public class ExceptionApiHandler {
         String message = ex.getMessage();
         log.warn("Get status 409: {}", ex.getMessage());
         return new ApiError(message, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ApiError handleDataAccessException(Exception ex) {
+        String message = ex.getMessage();
+        log.warn("Get database problem: {}", ex.getMessage());
+        return new ApiError(message, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(Exception.class)
