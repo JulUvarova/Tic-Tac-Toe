@@ -13,6 +13,7 @@
 <div class="container">
     <h2>Профиль пользователя</h2>
     <div id="user-info" class="player-info-container"></div>
+    <div id="user-stats-container" style="margin-bottom: 24px;"></div>
     <div class="tab-container">
         <button id="completed-btn" class="tab-btn" onclick="toggleGames('completed')">Завершённые игры</button>
         <button id="current-btn" class="tab-btn" onclick="toggleGames('current')">Текущие игры</button>
@@ -109,7 +110,39 @@
         }
     }
 
+    function loadUserStats() {
+        authFetch(`/game/player/${userId}/stats`)
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(stats => {
+                const statsDiv = document.getElementById('user-stats-container');
+                statsDiv.innerHTML = `
+                    <table style="margin: 0 auto; min-width: 320px; background: rgba(255,255,255,0.7); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                        <thead>
+                            <tr>
+                                <th>Выигрыши</th>
+                                <th>Проигрыши</th>
+                                <th>Ничьи</th>
+                                <th>Рейтинг побед</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center;">${stats.wins}</td>
+                                <td style="text-align:center;">${stats.losses}</td>
+                                <td style="text-align:center;">${stats.draws}</td>
+                                <td style="text-align:center;">${(stats.winRatio * 100).toFixed(1)}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            })
+            .catch(() => {
+                document.getElementById('user-stats-container').innerHTML = '<div class="error-box" style="display:block">Ошибка загрузки статистики</div>';
+            });
+    }
+
     loadUser();
+    loadUserStats();
 </script>
 </body>
 </html>

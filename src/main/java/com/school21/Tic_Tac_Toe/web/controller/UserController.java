@@ -3,7 +3,7 @@ package com.school21.Tic_Tac_Toe.web.controller;
 import com.school21.Tic_Tac_Toe.domain.model.user.User;
 import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
 import com.school21.Tic_Tac_Toe.web.mapper.UserWebMapper;
-import com.school21.Tic_Tac_Toe.web.model.UserDto;
+import com.school21.Tic_Tac_Toe.web.model.UserDtoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -34,7 +34,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<UserDtoResponse> getUserById(@PathVariable UUID id) {
         log.info("Finding user {}...", id);
         User user = userService.getUserById(id);
 
@@ -49,9 +49,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Successful"),
     })
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
+    public ResponseEntity<List<UserDtoResponse>> getAllUsers() {
         log.info("Getting all users...");
-        List<UserDto> users = userService.getAllUsers().stream().map(UserWebMapper::toDto).collect(Collectors.toList());
+        List<UserDtoResponse> users = userService.getAllUsers().stream().map(UserWebMapper::toDto).collect(Collectors.toList());
 
         log.info("Got {} users", users.size());
         return ResponseEntity.ok()

@@ -4,6 +4,7 @@ import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepository;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameConstant;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
 import com.school21.Tic_Tac_Toe.domain.service.game.strategy.MinimaxAgent;
 import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
 import com.school21.Tic_Tac_Toe.exception.InvalidGameIdException;
@@ -109,6 +110,11 @@ public class GameServiceImpl implements GameService {
     @Override
     public List<Game> getCompletedGamesByUserId(UUID userId) {
         return gameRepository.getCompletedGamesByUserId(userId);
+    }
+
+    @Override
+    public UserStatsModel getUserStats(UUID userId) {
+        return gameRepository.getUserStats(userId);
     }
 
     private boolean isBoardValid(int[][] prev, int[][] next, int player) {

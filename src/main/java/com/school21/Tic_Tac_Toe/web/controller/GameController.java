@@ -5,10 +5,8 @@ import com.school21.Tic_Tac_Toe.domain.service.game.GameService;
 import com.school21.Tic_Tac_Toe.exception.InvalidGameIdException;
 import com.school21.Tic_Tac_Toe.exception.InvalidMoveException;
 import com.school21.Tic_Tac_Toe.web.mapper.GameWebMapper;
-import com.school21.Tic_Tac_Toe.web.model.GameDtoRequest;
-import com.school21.Tic_Tac_Toe.web.model.GameDtoResponse;
-import com.school21.Tic_Tac_Toe.web.model.GameStatusType;
-import com.school21.Tic_Tac_Toe.web.model.OpponentType;
+import com.school21.Tic_Tac_Toe.web.mapper.StatsWebMapper;
+import com.school21.Tic_Tac_Toe.web.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -134,6 +132,19 @@ public class GameController {
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
                 .body(games);
+    }
+
+    @Operation(summary = "Get user stats",
+            description = "Get amount of user's wins, losses, draw and win ratio")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful")})
+    @GetMapping("/player/{userId}/stats")
+    public ResponseEntity<UserStatsDtoResponse> getUserStats(@PathVariable UUID userId) {
+        log.info("Getting stats for user {}...", userId);
+        UserStatsDtoResponse stats = StatsWebMapper.toStatsDto(gameService.getUserStats(userId));
+        log.info("Got stats: {}", stats);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(stats);
     }
 
     @Operation(summary = "Allow user to join game",

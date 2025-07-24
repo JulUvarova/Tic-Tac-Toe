@@ -1,9 +1,11 @@
 package com.school21.Tic_Tac_Toe.datasource.repository.game;
 
 import com.school21.Tic_Tac_Toe.datasource.mapper.GameDataMapper;
+import com.school21.Tic_Tac_Toe.datasource.mapper.StatsDataMapper;
 import com.school21.Tic_Tac_Toe.datasource.model.GameEntity;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -64,5 +66,10 @@ public class GameRepositoryImpl implements GameRepository {
                 .stream()
                 .map(GameDataMapper::toModel)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserStatsModel getUserStats(UUID userId) {
+        return StatsDataMapper.toStatsModel(gameRepository.getStatsByUserId(userId));
     }
 }
