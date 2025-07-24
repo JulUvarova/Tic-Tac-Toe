@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,7 +32,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        return userRepository.findAll(Sort.by(Sort.Direction.ASC, "login")).stream().map(UserDataMapper::toModel).collect(Collectors.toList());
+        return userRepository.findAll(Sort.by(Sort.Direction.ASC, "login"))
+                .stream()
+                .map(UserDataMapper::toModel)
+                .toList();
     }
 
     @Override

@@ -11,5 +11,5 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserRatioDtoResponse {
     private UUID userId;
-    private float winRatio;
+    private double winRatio;
 }

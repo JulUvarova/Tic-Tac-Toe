@@ -169,6 +169,22 @@ public class GameController {
                 .body(GameWebMapper.toGameResponseDto(game));
     }
 
+    @Operation(summary = "Get leaderboard",
+            description = "Get users list with top users and their win rate")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful")})
+    @GetMapping("/stats")
+    public ResponseEntity<List<UserRatioDtoResponse>> getLeaderBoard(@RequestParam(defaultValue = "5") int limit) {
+        log.info("Getting leader board...");
+        List<UserRatioDtoResponse> leaderBoard = gameService.getLeaderBoard(limit)
+                .stream()
+                .map(StatsWebMapper::toRatioDto)
+                .toList();
+        log.info("Got leader board {}", leaderBoard);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(leaderBoard);
+    }
+
     private UUID extractUserId(Authentication authentication) {
         return (UUID) authentication.getPrincipal();
     }

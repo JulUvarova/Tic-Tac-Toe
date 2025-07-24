@@ -1,6 +1,7 @@
 package com.school21.Tic_Tac_Toe.datasource.repository.game;
 
 import com.school21.Tic_Tac_Toe.datasource.model.GameEntity;
+import com.school21.Tic_Tac_Toe.datasource.model.UserRatioProjection;
 import com.school21.Tic_Tac_Toe.datasource.model.UserStatsProjection;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
 import org.springframework.data.domain.Sort;
@@ -35,12 +36,28 @@ public interface GameJpaRepository extends JpaRepository<GameEntity, UUID> {
             "               THEN 1 ELSE 0 END), 0) AS draws " +
             "FROM games g " +
             "WHERE :userId IN (g.playerX, g.playerO)"
-            )
+    )
     UserStatsProjection getStatsByUserId(@Param("userId") UUID userId);
 
-//    @Query("SELECT * " +
-//            "FROM games " +
-//            "ORDER BY win_ratio DESC " +
-//            "LIMIT :limit")
-//    List<UserWinRatioProjection> getLeaderBoard(@Param("limit") int limit);
+    @Query(value =
+            "SELECT  userId," +
+            "  COALESCE(SUM(win) * 1.0 / NULLIF(COUNT(*), 0), 0) AS winRatio " +
+            "FROM (" +
+            "  SELECT playerX AS userId, " +
+            "     CASE WHEN status = 'X_WINS' THEN 1 ELSE 0 END AS win " +
+            "  FROM games " +
+            "  WHERE status IN ('X_WINS', 'O_WINS', 'DRAW') " +
+            "    AND playerX IS NOT NULL " +
+            "  UNION ALL " +
+            "  SELECT playerO AS userId, " +
+            "     CASE WHEN status = 'O_WINS' THEN 1 ELSE 0 END AS win " +
+            "  FROM games " +
+            "  WHERE status IN ('X_WINS', 'O_WINS', 'DRAW') " +
+            "    AND playerO IS NOT NULL " +
+            ") combined " +
+            "GROUP BY userId " +
+            "ORDER BY winRatio DESC " +
+            "LIMIT :limit",
+            nativeQuery = true)
+    List<UserRatioProjection> getLeaderBoard(@Param("limit") int limit);
 }

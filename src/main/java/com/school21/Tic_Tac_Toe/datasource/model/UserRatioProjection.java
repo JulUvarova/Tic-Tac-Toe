@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface UserRatioProjection {
     UUID getUserId();
-    Float getWinRatio();
+    Double getWinRatio();
 }

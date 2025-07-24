@@ -4,6 +4,7 @@ import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepository;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameConstant;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatioModel;
 import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
 import com.school21.Tic_Tac_Toe.domain.service.game.strategy.MinimaxAgent;
 import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
@@ -115,6 +116,11 @@ public class GameServiceImpl implements GameService {
     @Override
     public UserStatsModel getUserStats(UUID userId) {
         return gameRepository.getUserStats(userId);
+    }
+
+    @Override
+    public List<UserRatioModel> getLeaderBoard(int limit) {
+        return gameRepository.getLeaderBoard(limit);
     }
 
     private boolean isBoardValid(int[][] prev, int[][] next, int player) {

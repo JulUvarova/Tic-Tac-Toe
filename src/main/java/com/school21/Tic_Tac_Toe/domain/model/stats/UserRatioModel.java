@@ -11,5 +11,5 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserRatioModel {
     private UUID userId;
-    private float winRatio;
+    private double winRatio;
 }

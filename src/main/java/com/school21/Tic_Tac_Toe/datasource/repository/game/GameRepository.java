@@ -1,6 +1,7 @@
 package com.school21.Tic_Tac_Toe.datasource.repository.game;
 
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatioModel;
 import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
 
 import java.util.List;
@@ -37,4 +38,9 @@ public interface GameRepository {
      * A method to get amount of wins, losses, draws for user
      */
     UserStatsModel getUserStats(UUID userId);
+
+    /**
+     * A method to get sorted leaderboard with custom size
+     */
+    List<UserRatioModel> getLeaderBoard(int limit);
 }
