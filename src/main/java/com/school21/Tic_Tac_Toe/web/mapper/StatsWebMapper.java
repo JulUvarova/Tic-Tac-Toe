@@ -1,6 +1,8 @@
 package com.school21.Tic_Tac_Toe.web.mapper;
 
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatioModel;
 import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
+import com.school21.Tic_Tac_Toe.web.model.UserRatioDtoResponse;
 import com.school21.Tic_Tac_Toe.web.model.UserStatsDtoResponse;
 import lombok.experimental.UtilityClass;
 
@@ -16,5 +18,14 @@ public class StatsWebMapper {
         statsDto.setDraws(stats.getDraws());
         statsDto.setWinRatio(stats.getWinRatio());
         return statsDto;
+    }
+
+    public static UserRatioDtoResponse toRatioDto(UserRatioModel ratio) {
+        if (ratio == null) return null;
+
+        UserRatioDtoResponse ratioDto = new UserRatioDtoResponse();
+        ratioDto.setUserId(ratio.getUserId());
+        ratioDto.setWinRatio(ratio.getWinRatio());
+        return ratioDto;
     }
 }
