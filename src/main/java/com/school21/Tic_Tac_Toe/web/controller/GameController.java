@@ -172,7 +172,7 @@ public class GameController {
     @Operation(summary = "Get leaderboard",
             description = "Get users list with top users and their win rate")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful")})
-    @GetMapping("/stats")
+    @GetMapping("/leaderboard")
     public ResponseEntity<List<UserRatioDtoResponse>> getLeaderBoard(@RequestParam(defaultValue = "5") int limit) {
         log.info("Getting leader board...");
         List<UserRatioDtoResponse> leaderBoard = gameService.getLeaderBoard(limit)

@@ -47,4 +47,9 @@ public class FrontendController {
     public String usersPage() {
         return "users";
     }
+
+    @GetMapping("/ui/leaderboard")
+    public String leaderboardPage() {
+        return "leaderboard";
+    }
 } 

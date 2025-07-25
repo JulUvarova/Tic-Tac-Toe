@@ -40,7 +40,7 @@ public interface GameJpaRepository extends JpaRepository<GameEntity, UUID> {
     UserStatsProjection getStatsByUserId(@Param("userId") UUID userId);
 
     @Query(value =
-            "SELECT  userId," +
+            "SELECT CAST(userId AS VARCHAR) AS userId," +
             "  COALESCE(SUM(win) * 1.0 / NULLIF(COUNT(*), 0), 0) AS winRatio " +
             "FROM (" +
             "  SELECT playerX AS userId, " +

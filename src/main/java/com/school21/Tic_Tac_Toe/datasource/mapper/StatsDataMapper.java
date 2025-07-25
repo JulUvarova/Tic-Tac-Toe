@@ -6,6 +6,8 @@ import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatioModel;
 import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
 import lombok.experimental.UtilityClass;
 
+import java.util.UUID;
+
 @UtilityClass
 public class StatsDataMapper {
     public static UserRatioModel toRatioModel(UserRatioProjection ratio) {
@@ -14,7 +16,7 @@ public class StatsDataMapper {
         }
 
         UserRatioModel ratioModel = new UserRatioModel();
-        ratioModel.setUserId(ratio.getUserId());
+        ratioModel.setUserId(UUID.fromString(ratio.getUserId()));
         ratioModel.setWinRatio(ratio.getWinRatio());
         return ratioModel;
     }
