@@ -1,8 +1,13 @@
 package com.school21.Tic_Tac_Toe.web.controller;
 
+import com.school21.Tic_Tac_Toe.domain.service.user.AuthService;
 import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
 import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
-import com.school21.Tic_Tac_Toe.web.model.SignUpRequest;
+import com.school21.Tic_Tac_Toe.web.model.JwtRequest;
+import com.school21.Tic_Tac_Toe.web.model.JwtResponse;
+import com.school21.Tic_Tac_Toe.web.model.RefreshJwtRequest;
+import com.school21.Tic_Tac_Toe.web.model.user.SignUpRequest;
+import com.school21.Tic_Tac_Toe.web.security.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -10,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
@@ -22,6 +28,7 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController {
     private final UserService userService;
+    private final AuthService authService;
 
     @Operation(summary = "Register new user",
             description = "Registration method that takes a SignUpRequest and returns a registration success status")
@@ -44,22 +51,30 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Invalid request data")
     })
     @PostMapping("/login")
-    public ResponseEntity<UUID> login(@RequestHeader("Authorization") String authHeader) {
-        log.info("User is authenticating...");
+    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
+        JwtResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
+    }
 
-        if (authHeader == null || !authHeader.startsWith("Basic ")) {
-            throw new InvalidUserDataException("Missing or invalid Authorization header");
+    @PostMapping("/token")
+    public ResponseEntity<JwtResponse> refreshAccessToken(@RequestBody RefreshJwtRequest request) {
+        JwtResponse response = authService.refreshAccessToken(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponse> refreshRefreshToken(@RequestBody RefreshJwtRequest request) {
+        JwtResponse response = authService.refreshRefreshToken(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<JwtAuthentication> getMe(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().build();
         }
-        // "Basic base64(login:password)"
-        String base64Credentials = authHeader.substring("Basic".length()).trim();
-        byte[] decodedBytes = Base64.getDecoder().decode(base64Credentials);
-        String credentials = new String(decodedBytes, StandardCharsets.UTF_8);
-        String[] parts = credentials.split(":", 2);
-        if (parts.length != 2) {
-            throw new InvalidUserDataException("Missing or invalid Authorization header");
-        }
-        UUID userId = userService.login(parts[0], parts[1]);
-        log.info("User {} {} was authenticated successfully", userId, parts[0]);
-        return ResponseEntity.ok(userId);
+        String token = authHeader.substring(7);
+        JwtAuthentication authentication = authService.getAuthentication(token);
+        return ResponseEntity.ok(authentication);
     }
 }

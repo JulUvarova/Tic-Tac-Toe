@@ -4,10 +4,8 @@ import com.school21.Tic_Tac_Toe.datasource.repository.user.UserRepository;
 import com.school21.Tic_Tac_Toe.domain.model.user.User;
 import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
 import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
-import com.school21.Tic_Tac_Toe.exception.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,28 +16,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    @Override
-    public void register(String login, String password) {
-        if (userRepository.findByLogin(login).isPresent()) {
-            throw new UserAlreadyExistsException(String.format("User %s already exists", login));
-        }
-
-        User newUser = new User();
-        newUser.setLogin(login);
-        newUser.setPassword(passwordEncoder.encode(password));
-        userRepository.save(newUser);
-    }
-
-    @Override
-    public UUID login(String login, String password) {
-        User user = userRepository.findByLogin(login).orElseThrow(() -> new InvalidUserDataException("Invalid credentials"));
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidUserDataException("Invalid credentials");
-        }
-        return user.getId();
-    }
 
     @Override
     public List<User> getAllUsers() {
@@ -50,4 +26,10 @@ public class UserServiceImpl implements UserService {
     public User getUserById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
+
+    @Override
+    public User getUserByLogin(String login) {
+        return userRepository.findByLogin(login).orElseThrow(() -> new InvalidUserDataException("Invalid credentials"));
+    }
+
 }

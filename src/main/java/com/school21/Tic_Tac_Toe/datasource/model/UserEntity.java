@@ -1,11 +1,11 @@
 package com.school21.Tic_Tac_Toe.datasource.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.school21.Tic_Tac_Toe.domain.model.user.Role;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "users")
@@ -18,4 +18,7 @@ public class UserEntity {
     private String login;
     @Column(nullable = false)
     private String password;
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles;
 }

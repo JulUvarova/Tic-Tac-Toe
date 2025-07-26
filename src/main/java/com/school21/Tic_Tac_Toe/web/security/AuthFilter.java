@@ -2,13 +2,16 @@ package com.school21.Tic_Tac_Toe.web.security;
 
 import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
 import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
+import com.school21.Tic_Tac_Toe.security.JwtAuthentication;
+import com.school21.Tic_Tac_Toe.security.JwtProvider;
+import com.school21.Tic_Tac_Toe.security.JwtUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
@@ -23,6 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthFilter extends GenericFilterBean {
     private final UserService userService;
+    private final JwtProvider jwtProvider;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -30,27 +34,25 @@ public class AuthFilter extends GenericFilterBean {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        String authHeader = httpRequest.getHeader("Authorization");
-        if (
-                "/auth/register".equals(httpRequest.getRequestURI())
-                        || "/auth/login".equals(httpRequest.getRequestURI())
-                        || authHeader == null
-                        || !authHeader.startsWith("Basic ")
-        ) {
-            // пропускаю на усмотрение securityConfig - он смотрит по адресам
+        String uri = httpRequest.getRequestURI();
+        if (uri.equals("/auth/register") || uri.equals("/auth/login") || uri.equals("/auth/token") || uri.equals("/auth/refresh")) {
             chain.doFilter(request, response);
             return;
         }
-        String base64Credentials = authHeader.substring("Basic".length()).trim();
-        byte[] decodedBytes = Base64.getDecoder().decode(base64Credentials);
-        String credentials = new String(decodedBytes, StandardCharsets.UTF_8);
-        String[] parts = credentials.split(":", 2);
-        if (parts.length != 2) {
-            throw new InvalidUserDataException("Malformed credentials");
+
+        String authHeader = httpRequest.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
         }
-        UUID userId = userService.login(parts[0], parts[1]);
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userId, null, List.of());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        String token = authHeader.substring(7);
+        if (!jwtProvider.validateAccessToken(token)) {
+            chain.doFilter(request, response);
+            return;
+        }
+        Claims claims = jwtProvider.getClaims(token);
+        JwtAuthentication authentication = JwtUtil.create(claims);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         chain.doFilter(request, response);
     }

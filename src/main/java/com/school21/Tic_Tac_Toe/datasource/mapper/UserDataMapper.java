@@ -11,12 +11,18 @@ public class UserDataMapper {
         entity.setId(user.getId());
         entity.setLogin(user.getLogin());
         entity.setPassword(user.getPassword());
+        entity.setRoles(user.getRoles());
         return entity;
     }
 
     public static User toModel(UserEntity entity) {
         if (entity == null) return null;
 
-        return new User(entity.getId(), entity.getLogin(), entity.getPassword());
+        User user = new User();
+        user.setId(entity.getId());
+        user.setLogin(entity.getLogin());
+        user.setPassword(entity.getPassword());
+        user.setRoles(entity.getRoles());
+        return user;
     }
 }

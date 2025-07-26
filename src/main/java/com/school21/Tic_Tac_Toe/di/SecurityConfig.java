@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
-                                "/auth/register", "/auth/login",
+                                "/auth/register", "/auth/login", "/auth/token", "/auth/refresh", "/auth/me",
                                 "/", "/ui/**", "/css/**", "/js/**", "/images/**", // для фронта
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**" // для сваггера
                         ).permitAll()

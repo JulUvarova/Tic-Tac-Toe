@@ -5,8 +5,8 @@ import com.school21.Tic_Tac_Toe.datasource.mapper.StatsDataMapper;
 import com.school21.Tic_Tac_Toe.datasource.model.GameEntity;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
-import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatioModel;
-import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatio;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -69,12 +69,12 @@ public class GameRepositoryImpl implements GameRepository {
     }
 
     @Override
-    public UserStatsModel getUserStats(UUID userId) {
+    public UserStats getUserStats(UUID userId) {
         return StatsDataMapper.toStatsModel(gameRepository.getStatsByUserId(userId));
     }
 
     @Override
-    public List<UserRatioModel> getLeaderBoard(int limit) {
+    public List<UserRatio> getLeaderBoard(int limit) {
         return gameRepository.getLeaderBoard(limit)
                 .stream()
                 .map(StatsDataMapper::toRatioModel)

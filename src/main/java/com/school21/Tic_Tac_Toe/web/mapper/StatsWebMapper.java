@@ -1,14 +1,14 @@
 package com.school21.Tic_Tac_Toe.web.mapper;
 
-import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatioModel;
-import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
-import com.school21.Tic_Tac_Toe.web.model.UserRatioDtoResponse;
-import com.school21.Tic_Tac_Toe.web.model.UserStatsDtoResponse;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatio;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserStats;
+import com.school21.Tic_Tac_Toe.web.model.stats.UserRatioDtoResponse;
+import com.school21.Tic_Tac_Toe.web.model.stats.UserStatsDtoResponse;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class StatsWebMapper {
-    public static UserStatsDtoResponse toStatsDto(UserStatsModel stats) {
+    public static UserStatsDtoResponse toStatsDto(UserStats stats) {
         if (stats == null) return null;
 
         UserStatsDtoResponse statsDto = new UserStatsDtoResponse();
@@ -20,7 +20,7 @@ public class StatsWebMapper {
         return statsDto;
     }
 
-    public static UserRatioDtoResponse toRatioDto(UserRatioModel ratio) {
+    public static UserRatioDtoResponse toRatioDto(UserRatio ratio) {
         if (ratio == null) return null;
 
         UserRatioDtoResponse ratioDto = new UserRatioDtoResponse();

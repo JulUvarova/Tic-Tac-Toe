@@ -3,7 +3,7 @@ package com.school21.Tic_Tac_Toe.web.controller;
 import com.school21.Tic_Tac_Toe.domain.model.user.User;
 import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
 import com.school21.Tic_Tac_Toe.web.mapper.UserWebMapper;
-import com.school21.Tic_Tac_Toe.web.model.UserDtoResponse;
+import com.school21.Tic_Tac_Toe.web.model.user.UserDtoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

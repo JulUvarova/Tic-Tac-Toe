@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    UUID login(String username, String password);
-
-    void register(String username, String password);
-
     List<User> getAllUsers();
 
     User getUserById(UUID id);
+
+    User getUserByLogin(String login);
 }

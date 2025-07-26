@@ -4,12 +4,12 @@ import com.school21.Tic_Tac_Toe.datasource.repository.game.GameRepository;
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameConstant;
 import com.school21.Tic_Tac_Toe.domain.model.game.GameStatus;
-import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatioModel;
-import com.school21.Tic_Tac_Toe.domain.model.stats.UserStatsModel;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserRatio;
+import com.school21.Tic_Tac_Toe.domain.model.stats.UserStats;
 import com.school21.Tic_Tac_Toe.domain.service.game.strategy.MinimaxAgent;
 import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
 import com.school21.Tic_Tac_Toe.exception.InvalidGameIdException;
-import com.school21.Tic_Tac_Toe.web.model.OpponentType;
+import com.school21.Tic_Tac_Toe.web.model.game.OpponentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class GameServiceImpl implements GameService {
         game.updateStatus();
         log.info("User  makes a move in game {}, new status: {}", game.getId(), game.getStatus());
         if (game.getStatus() == GameStatus.IN_PROGRESS) {
-            if (game.getPlayerO().equals(GameConstant.AGENT_UUID)) {
+            if (game.getPlayerO().equals(GameConstant.MINIMAX_AGENT_UUID)) {
                 int[] agentMove = MinimaxAgent.getMove(game.getBoard());
                 game.getBoard().getMatrix()[agentMove[0]][agentMove[1]] = GameConstant.PLAYER_O;
                 game.updateStatus();
@@ -69,7 +69,7 @@ public class GameServiceImpl implements GameService {
         game.setPlayerX(userId);
         game.setCurrentPlayer(userId);
         if (opponent == OpponentType.COMPUTER) {
-            game.setPlayerO(GameConstant.AGENT_UUID);
+            game.setPlayerO(GameConstant.MINIMAX_AGENT_UUID);
             game.setStatus(GameStatus.IN_PROGRESS);
         } else {
             game.setStatus(GameStatus.WAITING);
@@ -114,12 +114,12 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public UserStatsModel getUserStats(UUID userId) {
+    public UserStats getUserStats(UUID userId) {
         return gameRepository.getUserStats(userId);
     }
 
     @Override
-    public List<UserRatioModel> getLeaderBoard(int limit) {
+    public List<UserRatio> getLeaderBoard(int limit) {
         return gameRepository.getLeaderBoard(limit);
     }
 

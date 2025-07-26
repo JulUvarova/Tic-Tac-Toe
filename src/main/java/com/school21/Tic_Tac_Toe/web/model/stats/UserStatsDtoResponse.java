@@ -1,4 +1,4 @@
-package com.school21.Tic_Tac_Toe.web.model;
+package com.school21.Tic_Tac_Toe.web.model.stats;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

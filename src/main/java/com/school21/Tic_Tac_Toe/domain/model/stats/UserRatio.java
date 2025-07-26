@@ -7,12 +7,9 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserStatsModel {
+@NoArgsConstructor
+public class UserRatio {
     private UUID userId;
-    private int wins;
-    private int losses;
-    private int draws;
-    private float winRatio;
+    private double winRatio;
 }

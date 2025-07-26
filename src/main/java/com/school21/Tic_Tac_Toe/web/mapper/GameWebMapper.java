@@ -1,7 +1,7 @@
 package com.school21.Tic_Tac_Toe.web.mapper;
 
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
-import com.school21.Tic_Tac_Toe.web.model.GameDtoResponse;
+import com.school21.Tic_Tac_Toe.web.model.game.GameDtoResponse;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
