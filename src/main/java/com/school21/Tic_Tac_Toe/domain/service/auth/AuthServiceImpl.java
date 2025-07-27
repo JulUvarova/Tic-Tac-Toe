@@ -6,8 +6,6 @@ import com.school21.Tic_Tac_Toe.domain.model.user.User;
 import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
 import com.school21.Tic_Tac_Toe.exception.InvalidTokenException;
 import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
-import com.school21.Tic_Tac_Toe.security.JwtAuthentication;
-import com.school21.Tic_Tac_Toe.security.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

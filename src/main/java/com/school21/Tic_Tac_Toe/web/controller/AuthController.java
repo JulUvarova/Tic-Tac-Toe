@@ -2,7 +2,7 @@ package com.school21.Tic_Tac_Toe.web.controller;
 
 import com.school21.Tic_Tac_Toe.domain.service.auth.AuthService;
 import com.school21.Tic_Tac_Toe.exception.InvalidTokenException;
-import com.school21.Tic_Tac_Toe.security.JwtAuthentication;
+import com.school21.Tic_Tac_Toe.domain.service.auth.JwtAuthentication;
 import com.school21.Tic_Tac_Toe.web.mapper.TokenWebMapper;
 import com.school21.Tic_Tac_Toe.web.model.token.JwtRequest;
 import com.school21.Tic_Tac_Toe.web.model.token.JwtResponse;
@@ -70,7 +70,7 @@ public class AuthController {
     })
     @PostMapping("/token")
     public ResponseEntity<JwtResponse> refreshAccessToken(@RequestBody @Valid RefreshJwtRequest request) {
-        UUID userId = (UUID)authService.getRefreshAuthentication(request.getRefreshToken()).getPrincipal();
+        UUID userId = getUserIdFromRefreshToken(request.getRefreshToken());
         log.info("User {} is asking for refresh access token...", userId);
         JwtResponse token = TokenWebMapper.toJwtResponse(authService.refreshAccessToken(request.getRefreshToken()));
         log.info("User {} got new access token", userId);
@@ -88,7 +88,7 @@ public class AuthController {
     })
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> refreshRefreshToken(@RequestBody @Valid RefreshJwtRequest request) {
-        UUID userId = (UUID)authService.getRefreshAuthentication(request.getRefreshToken()).getPrincipal();
+        UUID userId = getUserIdFromRefreshToken(request.getRefreshToken());
         log.info("User {} is asking for refresh refresh token...", userId);
         JwtResponse token = TokenWebMapper.toJwtResponse(authService.refreshRefreshToken(request.getRefreshToken()));
         log.info("User {} got new refresh token", userId);
@@ -104,7 +104,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @GetMapping("/me")
-    public ResponseEntity<UserDtoResponse> getMe(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<UserDtoResponse> getMe() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !(auth instanceof JwtAuthentication jwtAuth)) {
@@ -121,5 +121,13 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
                 .body(userInfo);
+    }
+
+    private UUID getUserIdFromRefreshToken(String refreshToken) {
+        JwtAuthentication authentication = authService.getRefreshAuthentication(refreshToken);
+        if (authentication == null) {
+            throw new InvalidTokenException("Invalid refresh token");
+        }
+        return UUID.fromString(authentication.getPrincipal().toString());
     }
 }

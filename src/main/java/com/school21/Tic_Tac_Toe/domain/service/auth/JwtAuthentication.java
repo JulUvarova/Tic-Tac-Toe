@@ -1,4 +1,4 @@
-package com.school21.Tic_Tac_Toe.security;
+package com.school21.Tic_Tac_Toe.domain.service.auth;
 
 import com.school21.Tic_Tac_Toe.domain.model.user.Role;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class JwtAuthentication implements Authentication {
     private UUID id;
-    private String login;
     private Set<Role> roles;
     private boolean authenticated;
 
@@ -52,6 +51,6 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return login;
+        return id.toString();
     }
 } 

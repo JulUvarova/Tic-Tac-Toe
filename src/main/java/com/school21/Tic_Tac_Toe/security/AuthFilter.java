@@ -1,18 +1,21 @@
 package com.school21.Tic_Tac_Toe.security;
 
 import com.school21.Tic_Tac_Toe.domain.service.auth.AuthService;
+import com.school21.Tic_Tac_Toe.domain.service.auth.JwtAuthentication;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthFilter extends GenericFilterBean {
@@ -42,7 +45,9 @@ public class AuthFilter extends GenericFilterBean {
         }
         String token = authHeader.substring(7);
         JwtAuthentication authentication = authService.getAuthentication(token);
-        if (authentication != null) {
+        if (authentication == null) {
+            log.warn("Invalid token provided for URI: {}", uri);
+        } else {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);

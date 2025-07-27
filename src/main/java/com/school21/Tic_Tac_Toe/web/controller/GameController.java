@@ -171,7 +171,7 @@ public class GameController {
     }
 
     private UUID extractUserId(Authentication authentication) {
-        return (UUID) authentication.getPrincipal();
+        return UUID.fromString(authentication.getPrincipal().toString());
     }
 
     private List<GameDtoResponse> findGames(GameStatusType type, UUID userId) {
