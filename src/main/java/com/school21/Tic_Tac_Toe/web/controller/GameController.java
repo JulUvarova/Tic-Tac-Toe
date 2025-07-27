@@ -2,8 +2,6 @@ package com.school21.Tic_Tac_Toe.web.controller;
 
 import com.school21.Tic_Tac_Toe.domain.model.game.Game;
 import com.school21.Tic_Tac_Toe.domain.service.game.GameService;
-import com.school21.Tic_Tac_Toe.exception.InvalidGameIdException;
-import com.school21.Tic_Tac_Toe.exception.InvalidMoveException;
 import com.school21.Tic_Tac_Toe.web.mapper.GameWebMapper;
 import com.school21.Tic_Tac_Toe.web.mapper.StatsWebMapper;
 import com.school21.Tic_Tac_Toe.web.model.game.GameDtoRequest;
@@ -32,7 +30,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@SecurityRequirement(name = "basicAuth")
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/game")
 public class GameController {
     private final GameService gameService;
@@ -51,21 +49,7 @@ public class GameController {
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
         log.info("User {} is moving in game {} ...", userId, gameId);
 
-        // валидация
-        if (!gameId.equals(userMoveRequest.getId())) {
-            throw new InvalidGameIdException(
-                    String.format("Invalid matching game id: request %s, response %s", gameId, userMoveRequest.getId()));
-        }
-        if (gameService.isGameOver(gameId)) {
-            throw new InvalidMoveException(
-                    String.format("Game %s ended", gameId));
-        }
-        if (!gameService.validateUserBoard(userId, gameId, userMoveRequest.getBoard())) {
-            throw new InvalidMoveException(
-                    String.format("Invalid user's move in game %s", gameId));
-        }
-        // обработка хода
-        Game gameResponse = gameService.getNextMove(gameId, userMoveRequest.getBoard());
+        Game gameResponse = gameService.getNextMove(gameId, userId, userMoveRequest.getBoard());
         log.info("Successful moves in game {}", gameResponse);
         return ResponseEntity.ok()
                 .header("Content-type", "application/json")
@@ -116,7 +100,7 @@ public class GameController {
     public ResponseEntity<List<GameDtoResponse>> getGamesList() {
         log.info("Getting available games...");
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
-        List<GameDtoResponse> games = gameService.getAvailableGamesforUserId(userId)
+        List<GameDtoResponse> games = gameService.getAvailableGamesForUserId(userId)
                 .stream()
                 .map(GameWebMapper::toGameResponseDto)
                 .toList();
@@ -163,10 +147,6 @@ public class GameController {
     public ResponseEntity<GameDtoResponse> joinGame(@PathVariable UUID gameId) {
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
         log.info("User {} is joining game {}...", userId, gameId);
-        if (gameService.isGameOver(gameId)) {
-            throw new InvalidMoveException(
-                    String.format("Game %s ended", gameId));
-        }
         Game game = gameService.joinGame(gameId, userId);
         log.info("User {} joined game {}", userId, gameId);
         return ResponseEntity.ok()

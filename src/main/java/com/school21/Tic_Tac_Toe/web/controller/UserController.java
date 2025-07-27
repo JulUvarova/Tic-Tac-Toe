@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@SecurityRequirement(name = "basicAuth")
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
@@ -36,7 +36,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDtoResponse> getUserById(@PathVariable UUID id) {
         log.info("Finding user {}...", id);
-        User user = userService.getUserById(id);
+        User user = userService.getById(id);
 
         log.info("User {} {} was found", id, user.getLogin());
         return ResponseEntity.ok()

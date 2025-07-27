@@ -1,6 +1,6 @@
 package com.school21.Tic_Tac_Toe.di;
 
-import com.school21.Tic_Tac_Toe.web.security.AuthFilter;
+import com.school21.Tic_Tac_Toe.security.AuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,8 @@ public class SecurityConfig {
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
-                                "/auth/register", "/auth/login", "/auth/token", "/auth/refresh", "/auth/me",
+                                "/auth/register", "/auth/login",
+                                "/auth/refresh", "/auth/token",
                                 "/", "/ui/**", "/css/**", "/js/**", "/images/**", // для фронта
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**" // для сваггера
                         ).permitAll()

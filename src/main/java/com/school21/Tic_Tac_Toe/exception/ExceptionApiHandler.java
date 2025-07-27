@@ -47,7 +47,10 @@ public class ExceptionApiHandler {
         return new ApiError(message, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InvalidUserDataException.class)
+    @ExceptionHandler({
+            InvalidUserDataException.class,
+            InvalidTokenException.class
+    })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ApiError handleInvalidUserDataException(Exception ex) {
         String message = ex.getMessage();

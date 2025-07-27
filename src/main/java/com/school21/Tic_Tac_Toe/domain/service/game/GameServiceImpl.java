@@ -9,6 +9,7 @@ import com.school21.Tic_Tac_Toe.domain.model.stats.UserStats;
 import com.school21.Tic_Tac_Toe.domain.service.game.strategy.MinimaxAgent;
 import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
 import com.school21.Tic_Tac_Toe.exception.InvalidGameIdException;
+import com.school21.Tic_Tac_Toe.exception.InvalidMoveException;
 import com.school21.Tic_Tac_Toe.web.model.game.OpponentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,22 @@ public class GameServiceImpl implements GameService {
     private final GameRepository gameRepository;
 
     @Override
-    public Game getNextMove(UUID gameId, int[][] userBoard) {
+    public Game getNextMove(UUID gameId, UUID userId, int[][] userBoard) {
         Game game = gameRepository.findById(gameId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
+        if (!userId.equals(game.getCurrentPlayer())) {
+            throw new InvalidGameIdException(String.format("It's not time for user %s move", userId));
+        }
+        if (isGameOver(game)) {
+            throw new InvalidMoveException(
+                    String.format("Game %s ended", gameId));
+        }
+        if (!isBoardValid(game.getBoard().getMatrix(), userBoard,
+                (game.getCurrentPlayer().equals(game.getPlayerX()) ? GameConstant.PLAYER_X : GameConstant.PLAYER_O))) {
+            throw new InvalidMoveException(
+                    String.format("Invalid user move in game %s", gameId));
+        }
+
         game.getBoard().setMatrix(userBoard);
         game.updateStatus();
         log.info("User  makes a move in game {}, new status: {}", game.getId(), game.getStatus());
@@ -45,21 +59,7 @@ public class GameServiceImpl implements GameService {
         return game;
     }
 
-    @Override
-    public boolean validateUserBoard(UUID userId, UUID gameId, int[][] userBoard) {
-        Game game = gameRepository.findById(gameId).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
-        if (!userId.equals(game.getCurrentPlayer()) || game.getStatus() != GameStatus.IN_PROGRESS) {
-            return false;
-        }
-        return isBoardValid(game.getBoard().getMatrix(), userBoard, (game.getCurrentPlayer().equals(game.getPlayerX()) ? GameConstant.PLAYER_X : GameConstant.PLAYER_O));
-    }
-
-    @Override
-    public boolean isGameOver(UUID gameId) {
-        Game game = gameRepository.findById(gameId).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Invalid game id %s", gameId)));
-
+    private boolean isGameOver(Game game) {
         return game.getStatus() == GameStatus.O_WINS || game.getStatus() == GameStatus.X_WINS;
     }
 
@@ -99,7 +99,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Game> getAvailableGamesforUserId(UUID userId) {
+    public List<Game> getAvailableGamesForUserId(UUID userId) {
         return gameRepository.getAvailableGamesForUser(userId);
     }
 

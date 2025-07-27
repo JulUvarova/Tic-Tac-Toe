@@ -12,17 +12,7 @@ public interface GameService {
     /**
      * A method to get the next move of the current game using the Minimax algorithm.
      */
-    Game getNextMove(UUID gameId, int[][] userBoard);
-
-    /**
-     * A method to validate the current game board (check that previous moves haven't been changed).
-     */
-    boolean validateUserBoard(UUID userId, UUID gameId, int[][] userBoard);
-
-    /**
-     * A method to check if the game has ended.
-     */
-    boolean isGameOver(UUID gameId);
+    Game getNextMove(UUID gameId, UUID userId, int[][] userBoard);
 
     /**
      * Create new game.
@@ -42,7 +32,7 @@ public interface GameService {
     /**
      * A method to get list of available (WAITING) games. It excludes games with userId
      */
-    List<Game> getAvailableGamesforUserId(UUID userId);
+    List<Game> getAvailableGamesForUserId(UUID userId);
 
     /**
      * A method to get list of current (WAITING, IN_PROGRESS) games for user with userId

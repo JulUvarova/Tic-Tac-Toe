@@ -1,10 +1,11 @@
-package com.school21.Tic_Tac_Toe.web.security;
+package com.school21.Tic_Tac_Toe.domain.service.auth;
 
 import com.school21.Tic_Tac_Toe.domain.model.user.User;
+import com.school21.Tic_Tac_Toe.exception.InvalidTokenException;
+import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,41 +31,52 @@ public class JwtProvider {
         this.jwtRefreshSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtRefreshSecret));
     }
 
-    public String generateAccessToken(@NonNull User user) {
-        final LocalDateTime now = LocalDateTime.now();
-        //! доступ на 5 минут!!
-        final Instant accessExpirationInstant = now.plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant();
+    public String generateAccessToken(User user) {
+        if (user == null) {
+            throw new InvalidUserDataException("User is null");
+        }
+        final Instant accessExpirationInstant = LocalDateTime.now()
+                .plusMinutes(5)   //TODO  сейчас доступ на 5 минут!!
+                .atZone(ZoneId.systemDefault())
+                .toInstant();
         final Date accessExpiration = Date.from(accessExpirationInstant);
         return Jwts.builder()
-                .setSubject(user.getLogin())
+                .setSubject(user.getId().toString())
                 .setExpiration(accessExpiration)
                 .signWith(jwtAccessSecret)
                 .claim("roles", user.getRoles())
-                .claim("id", user.getId())
                 .claim("login", user.getLogin())
                 .compact();
     }
 
-    public String generateRefreshToken(@NonNull User user) {
-        final LocalDateTime now = LocalDateTime.now();
-        final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
+    public String generateRefreshToken(User user) {
+        if (user == null) {
+            throw new InvalidUserDataException("User is null");
+        }
+        final Instant refreshExpirationInstant = LocalDateTime.now()
+                .plusDays(30)
+                .atZone(ZoneId.systemDefault())
+                .toInstant();
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
         return Jwts.builder()
-                .setSubject(user.getLogin())
+                .setSubject(user.getId().toString())
                 .setExpiration(refreshExpiration)
                 .signWith(jwtRefreshSecret)
                 .compact();
     }
 
-    public boolean validateAccessToken(@NonNull String accessToken) {
+    public boolean validateAccessToken(String accessToken) {
         return validateToken(accessToken, jwtAccessSecret);
     }
 
-    public boolean validateRefreshToken(@NonNull String refreshToken) {
+    public boolean validateRefreshToken(String refreshToken) {
         return validateToken(refreshToken, jwtRefreshSecret);
     }
 
-    private boolean validateToken(@NonNull String token, @NonNull Key secret) {
+    private boolean validateToken(String token, Key secret) {
+        if (token == null || secret == null) {
+            return false;
+        }
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secret)
@@ -85,19 +97,22 @@ public class JwtProvider {
         return false;
     }
 
-    public Claims getAccessClaims(@NonNull String token) {
+    public Claims getAccessClaims(String token) {
         return getClaims(token, jwtAccessSecret);
     }
 
-    public Claims getRefreshClaims(@NonNull String token) {
+    public Claims getRefreshClaims(String token) {
         return getClaims(token, jwtRefreshSecret);
     }
 
-    private Claims getClaims(@NonNull String token, @NonNull Key secret) {
+    private Claims getClaims(String token, Key secret) {
+        if ((token == null) || (secret == null)) {
+            throw new InvalidTokenException("Invalid token or secret");
+        }
         return Jwts.parserBuilder()
                 .setSigningKey(secret)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
-} 
+}

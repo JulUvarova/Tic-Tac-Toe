@@ -1,11 +1,6 @@
-package com.school21.Tic_Tac_Toe.web.security;
+package com.school21.Tic_Tac_Toe.security;
 
-import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
-import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
-import com.school21.Tic_Tac_Toe.security.JwtAuthentication;
-import com.school21.Tic_Tac_Toe.security.JwtProvider;
-import com.school21.Tic_Tac_Toe.security.JwtUtil;
-import io.jsonwebtoken.Claims;
+import com.school21.Tic_Tac_Toe.domain.service.auth.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -17,16 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class AuthFilter extends GenericFilterBean {
-    private final UserService userService;
-    private final JwtProvider jwtProvider;
+    private final AuthService authService;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -35,7 +25,12 @@ public class AuthFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String uri = httpRequest.getRequestURI();
-        if (uri.equals("/auth/register") || uri.equals("/auth/login") || uri.equals("/auth/token") || uri.equals("/auth/refresh")) {
+        if (
+                uri.equals("/auth/register")
+                        || uri.equals("/auth/login")
+                        || uri.equals("/auth/token")
+                        || uri.equals("/auth/refresh")
+        ) {
             chain.doFilter(request, response);
             return;
         }
@@ -46,14 +41,10 @@ public class AuthFilter extends GenericFilterBean {
             return;
         }
         String token = authHeader.substring(7);
-        if (!jwtProvider.validateAccessToken(token)) {
-            chain.doFilter(request, response);
-            return;
+        JwtAuthentication authentication = authService.getAuthentication(token);
+        if (authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        Claims claims = jwtProvider.getClaims(token);
-        JwtAuthentication authentication = JwtUtil.create(claims);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         chain.doFilter(request, response);
     }
 }

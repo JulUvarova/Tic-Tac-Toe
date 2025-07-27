@@ -14,10 +14,4 @@ public class UserDtoResponse {
     private UUID id;
     private String login;
     private List<String> roles;
-
-    public UserDtoResponse(UUID id, String login, List<String> roles) {
-        this.id = id;
-        this.login = login;
-        this.roles = roles;
-    }
-} 
+}

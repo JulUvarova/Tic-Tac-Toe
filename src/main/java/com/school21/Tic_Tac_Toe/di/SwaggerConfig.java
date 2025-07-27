@@ -11,13 +11,14 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(
                 title = "Tic-Tac-Toe API",
                 version = "1.0",
-                description = "API для игры в крестики-нолики"
+                description = "API для игры в крестики-нолики с JWT аутентификацией"
         )
 )
 @SecurityScheme(
-        name = "basicAuth",
+        name = "bearerAuth",
         type = SecuritySchemeType.HTTP,
-        scheme = "basic"
+        scheme = "bearer",
+        bearerFormat = "JWT"
 )
 public class SwaggerConfig {
 }

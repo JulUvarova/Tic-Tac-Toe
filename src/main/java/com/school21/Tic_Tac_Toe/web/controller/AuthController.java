@@ -1,25 +1,26 @@
 package com.school21.Tic_Tac_Toe.web.controller;
 
-import com.school21.Tic_Tac_Toe.domain.service.user.AuthService;
-import com.school21.Tic_Tac_Toe.domain.service.user.UserService;
-import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
-import com.school21.Tic_Tac_Toe.web.model.JwtRequest;
-import com.school21.Tic_Tac_Toe.web.model.JwtResponse;
-import com.school21.Tic_Tac_Toe.web.model.RefreshJwtRequest;
+import com.school21.Tic_Tac_Toe.domain.service.auth.AuthService;
+import com.school21.Tic_Tac_Toe.exception.InvalidTokenException;
+import com.school21.Tic_Tac_Toe.security.JwtAuthentication;
+import com.school21.Tic_Tac_Toe.web.mapper.TokenWebMapper;
+import com.school21.Tic_Tac_Toe.web.model.token.JwtRequest;
+import com.school21.Tic_Tac_Toe.web.model.token.JwtResponse;
+import com.school21.Tic_Tac_Toe.web.model.token.RefreshJwtRequest;
 import com.school21.Tic_Tac_Toe.web.model.user.SignUpRequest;
-import com.school21.Tic_Tac_Toe.web.security.JwtAuthentication;
+import com.school21.Tic_Tac_Toe.web.model.user.UserDtoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.UUID;
 
 @Slf4j
@@ -27,7 +28,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
-    private final UserService userService;
     private final AuthService authService;
 
     @Operation(summary = "Register new user",
@@ -39,9 +39,9 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Boolean> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
         log.info("New user is registering...");
-        userService.register(signUpRequest.getLogin(), signUpRequest.getPassword());
-        log.info("User registered successfully");
-        return ResponseEntity.ok(true);
+        authService.register(signUpRequest.getLogin(), signUpRequest.getPassword());
+        log.info("User {} registered successfully", signUpRequest.getLogin());
+        return ResponseEntity.status(HttpStatus.CREATED).body(true);
     }
 
     @Operation(summary = "Authorize user",
@@ -51,30 +51,75 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Invalid request data")
     })
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
-        JwtResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<JwtResponse> login(@RequestBody @Valid JwtRequest request) {
+        log.info("User {} is authenticating...", request.getLogin());
+        JwtResponse token = TokenWebMapper.toJwtResponse(authService.login(request.getLogin(), request.getPassword()));
+        log.info("User {} authenticated successfully", request.getLogin());
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(token);
     }
 
+
+    @Operation(summary = "Refresh access token",
+            description = "Refresh access token using refresh token. Returns new access token.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Access token refreshed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid refresh token"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or expired refresh token")
+    })
     @PostMapping("/token")
-    public ResponseEntity<JwtResponse> refreshAccessToken(@RequestBody RefreshJwtRequest request) {
-        JwtResponse response = authService.refreshAccessToken(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<JwtResponse> refreshAccessToken(@RequestBody @Valid RefreshJwtRequest request) {
+        UUID userId = (UUID)authService.getRefreshAuthentication(request.getRefreshToken()).getPrincipal();
+        log.info("User {} is asking for refresh access token...", userId);
+        JwtResponse token = TokenWebMapper.toJwtResponse(authService.refreshAccessToken(request.getRefreshToken()));
+        log.info("User {} got new access token", userId);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(token);
     }
 
+    @Operation(summary = "Refresh refresh token",
+            description = "Refresh both access token and refresh token using current refresh token. Returns new access and refresh tokens.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tokens refreshed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid refresh token"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or expired refresh token")
+    })
     @PostMapping("/refresh")
-    public ResponseEntity<JwtResponse> refreshRefreshToken(@RequestBody RefreshJwtRequest request) {
-        JwtResponse response = authService.refreshRefreshToken(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<JwtResponse> refreshRefreshToken(@RequestBody @Valid RefreshJwtRequest request) {
+        UUID userId = (UUID)authService.getRefreshAuthentication(request.getRefreshToken()).getPrincipal();
+        log.info("User {} is asking for refresh refresh token...", userId);
+        JwtResponse token = TokenWebMapper.toJwtResponse(authService.refreshRefreshToken(request.getRefreshToken()));
+        log.info("User {} got new refresh token", userId);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(token);
     }
 
+    @Operation(summary = "Get current user info",
+            description = "Get information about the currently authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @GetMapping("/me")
-    public ResponseEntity<JwtAuthentication> getMe(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<UserDtoResponse> getMe(@RequestHeader("Authorization") String authHeader) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !(auth instanceof JwtAuthentication jwtAuth)) {
+            throw new InvalidTokenException("Invalid token");
         }
-        String token = authHeader.substring(7);
-        JwtAuthentication authentication = authService.getAuthentication(token);
-        return ResponseEntity.ok(authentication);
+
+        UserDtoResponse userInfo = new UserDtoResponse(
+                (UUID) jwtAuth.getPrincipal(),
+                jwtAuth.getName(),
+                jwtAuth.getAuthorities().stream()
+                        .map(Object::toString)
+                        .toList()
+        );
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(userInfo);
     }
 }

@@ -33,12 +33,12 @@ public class AppConfig {
 
     @Bean
     public ApplicationRunner dataLoader(UserRepository userRepository) {
-        return args -> userRepository.save(new User(GameConstant.MINIMAX_AGENT_UUID, "Agent_OOO", "1234"));
+        return args -> userRepository.save(new User(GameConstant.MINIMAX_AGENT_UUID, "Agent_OOO", "1234", null));
     }
 
     @Bean
-    public UserService userService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        return new UserServiceImpl(userRepository, passwordEncoder);
+    public UserService userService(UserRepository userRepository) {
+        return new UserServiceImpl(userRepository);
     }
 
     @Bean

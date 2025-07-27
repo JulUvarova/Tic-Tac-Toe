@@ -3,7 +3,7 @@ package com.school21.Tic_Tac_Toe.domain.service.user;
 import com.school21.Tic_Tac_Toe.datasource.repository.user.UserRepository;
 import com.school21.Tic_Tac_Toe.domain.model.user.User;
 import com.school21.Tic_Tac_Toe.exception.EntityNotFoundException;
-import com.school21.Tic_Tac_Toe.exception.InvalidUserDataException;
+import com.school21.Tic_Tac_Toe.exception.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,13 +23,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(UUID id) {
+    public User getById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
     @Override
-    public User getUserByLogin(String login) {
-        return userRepository.findByLogin(login).orElseThrow(() -> new InvalidUserDataException("Invalid credentials"));
+    public User getByLogin(String login) {
+        return userRepository.findByLogin(login).orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
+    @Override
+    public void create(String login, String password) {
+        if (userRepository.findByLogin(login).isPresent()) {
+            throw new UserAlreadyExistsException(String.format("User %s already exists", login));
+        }
+
+        User newUser = new User();
+        newUser.setLogin(login);
+        newUser.setPassword(password);
+        userRepository.save(newUser);
+    }
 }

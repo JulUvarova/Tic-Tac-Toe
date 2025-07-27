@@ -1,23 +1,24 @@
-package com.school21.Tic_Tac_Toe.web.security;
+package com.school21.Tic_Tac_Toe.security;
 
 import com.school21.Tic_Tac_Toe.domain.model.user.Role;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+@Component
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class JwtAuthentication implements Authentication {
-    private final UUID uuid;
-    private final List<Role> roles;
+    private UUID id;
+    private String login;
+    private Set<Role> roles;
     private boolean authenticated;
-
-    public JwtAuthentication(UUID uuid, List<Role> roles, boolean authenticated) {
-        this.uuid = uuid;
-        this.roles = roles;
-        this.authenticated = authenticated;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -36,7 +37,7 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        return uuid;
+        return id;
     }
 
     @Override
@@ -51,6 +52,6 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return uuid.toString();
+        return login;
     }
 } 
