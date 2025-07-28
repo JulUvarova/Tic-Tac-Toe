@@ -51,18 +51,35 @@
         const login = document.getElementById('loginLogin').value;
         const password = document.getElementById('loginPassword').value;
         if (!login || !password) return showError('Введите логин и пароль');
-        const credentials = btoa(login + ':' + password);
+        
         fetch('/auth/login', {
             method: 'POST',
-            headers: {'Authorization': 'Basic ' + credentials}
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({login, password})
         })
             .then(async res => {
                 if (res.ok) {
-                    sessionStorage.setItem('authLogin', login);
-                    sessionStorage.setItem('authPassword', password);
-                    const userId = await res.json();
-                    sessionStorage.setItem('userId', userId);
-                    window.location.href = '/ui/menu';
+                    const jwtResponse = await res.json();
+                    // Сохраняем токены
+                    sessionStorage.setItem('accessToken', jwtResponse.accessToken);
+                    sessionStorage.setItem('refreshToken', jwtResponse.refreshToken);
+                    sessionStorage.setItem('tokenType', jwtResponse.type);
+                    
+                    // Получаем информацию о пользователе
+                    const userResponse = await fetch('/auth/me', {
+                        headers: {
+                            'Authorization': jwtResponse.type + ' ' + jwtResponse.accessToken
+                        }
+                    });
+                    
+                    if (userResponse.ok) {
+                        const user = await userResponse.json();
+                        sessionStorage.setItem('userId', user.id);
+                        sessionStorage.setItem('userLogin', user.login);
+                        window.location.href = '/ui/menu';
+                    } else {
+                        showError('Ошибка получения информации о пользователе');
+                    }
                 } else {
                     const err = await res.json();
                     showError(err.error || 'Ошибка входа');

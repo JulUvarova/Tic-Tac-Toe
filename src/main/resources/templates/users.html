@@ -15,20 +15,8 @@
     <div id="users" class="games-container"></div>
     <button onclick="window.location.href='/ui/menu'">В меню</button>
 </div>
+<script src="/js/auth.js"></script>
 <script>
-    function authFetch(url, options = {}) {
-        const login = sessionStorage.getItem('authLogin');
-        const password = sessionStorage.getItem('authPassword');
-        if (!login || !password) {
-            window.location.href = '/ui/auth';
-            return Promise.reject('Нет авторизации');
-        }
-        const credentials = btoa(login + ':' + password);
-        options.headers = options.headers || {};
-        options.headers['Authorization'] = 'Basic ' + credentials;
-        return fetch(url, options);
-    }
-
     function loadUsers() {
         authFetch('/user')
             .then(res => res.ok ? res.json() : Promise.reject())
@@ -61,24 +49,10 @@
             .catch(() => alert('Ошибка доступа к карточке игрока'));
     }
 
-    function goToMyProfile() {
-        const userId = sessionStorage.getItem('userId');
-        if (userId) {
-            window.location.href = '/ui/user/' + userId;
-        } else {
-            authFetch('/user/me')
-                .then(res => res.ok ? res.json() : Promise.reject())
-                .then(user => {
-                    sessionStorage.setItem('userId', user.id);
-                    window.location.href = '/ui/user/' + user.id;
-                })
-                .catch(() => alert('Ошибка получения профиля пользователя.'));
-        }
-    }
-
+    // Проверяем авторизацию при загрузке страницы
+    checkAuth();
     loadUsers();
-    setInterval(loadGames, 5000);
-
+    setInterval(loadUsers, 5000);
 </script>
 </body>
 </html>
