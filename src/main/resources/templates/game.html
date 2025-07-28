@@ -196,12 +196,10 @@
         if (pollingInterval) clearInterval(pollingInterval);
     }
 
-    // Проверяем авторизацию при загрузке страницы
     checkAuth();
     fetchGame();
     startPolling();
     
-    // Инициализируем обработчик закрытия меню профиля
     initProfileMenuHandler();
 </script>
 </body>

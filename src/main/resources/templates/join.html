@@ -59,12 +59,10 @@
             .catch(() => alert('Ошибка присоединения к игре'));
     }
 
-    // Проверяем авторизацию при загрузке страницы
     checkAuth();
     loadGames();
     setInterval(loadGames, 5000);
     
-    // Инициализируем обработчик закрытия меню профиля
     initProfileMenuHandler();
 </script>
 </body>

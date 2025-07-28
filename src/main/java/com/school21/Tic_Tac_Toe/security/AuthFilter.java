@@ -28,6 +28,7 @@ public class AuthFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String uri = httpRequest.getRequestURI();
+        log.info("AuthFilter processing URI: {}", uri);
         if (
                 uri.equals("/auth/register")
                         || uri.equals("/auth/login")
@@ -39,7 +40,9 @@ public class AuthFilter extends GenericFilterBean {
         }
 
         String authHeader = httpRequest.getHeader("Authorization");
+        log.info("Authorization header: {}", authHeader);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.warn("No valid Authorization header found for URI: {}", uri);
             chain.doFilter(request, response);
             return;
         }
@@ -48,6 +51,7 @@ public class AuthFilter extends GenericFilterBean {
         if (authentication == null) {
             log.warn("Invalid token provided for URI: {}", uri);
         } else {
+            log.info("Authentication successful for user: {}", authentication.getLogin());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);

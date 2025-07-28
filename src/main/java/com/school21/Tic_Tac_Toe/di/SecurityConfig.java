@@ -23,7 +23,6 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/register", "/auth/login",
                                 "/auth/refresh", "/auth/token",
-                                "/h2-console/**",
                                 "/", "/ui/**", "/css/**", "/js/**", "/images/**", // для фронта
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**" // для сваггера
                         ).permitAll()

@@ -49,12 +49,10 @@
             .catch(() => alert('Ошибка доступа к карточке игрока'));
     }
 
-    // Проверяем авторизацию при загрузке страницы
     checkAuth();
     loadUsers();
     setInterval(loadUsers, 5000);
     
-    // Инициализируем обработчик закрытия меню профиля
     initProfileMenuHandler();
 </script>
 </body>

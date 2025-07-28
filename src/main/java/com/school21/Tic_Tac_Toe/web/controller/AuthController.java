@@ -12,6 +12,7 @@ import com.school21.Tic_Tac_Toe.web.model.user.UserDtoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -103,8 +104,10 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Successful"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/me")
     public ResponseEntity<UserDtoResponse> getMe() {
+        log.info("User is asking about themself...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !(auth instanceof JwtAuthentication jwtAuth)) {
@@ -113,11 +116,12 @@ public class AuthController {
 
         UserDtoResponse userInfo = new UserDtoResponse(
                 (UUID) jwtAuth.getPrincipal(),
-                jwtAuth.getName(),
+                jwtAuth.getLogin(),
                 jwtAuth.getAuthorities().stream()
                         .map(Object::toString)
                         .toList()
         );
+        log.info("Got user info: {}", userInfo);
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
                 .body(userInfo);

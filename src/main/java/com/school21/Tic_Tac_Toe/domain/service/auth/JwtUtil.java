@@ -13,8 +13,9 @@ import java.util.stream.Collectors;
 public class JwtUtil {
     public static JwtAuthentication create(Claims claims) {
         UUID id = UUID.fromString(claims.getSubject());
+        String login = claims.get("login", String.class);
         Set<Role> roles = getRoles(claims);
-        return new JwtAuthentication(id, roles, true);
+        return new JwtAuthentication(id, login, roles, true);
     }
 
     private static Set<Role> getRoles(Claims claims) {

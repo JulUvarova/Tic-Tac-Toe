@@ -16,6 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class JwtAuthentication implements Authentication {
     private UUID id;
+    private String login;
     private Set<Role> roles;
     private boolean authenticated;
 
@@ -52,5 +53,9 @@ public class JwtAuthentication implements Authentication {
     @Override
     public String getName() {
         return id.toString();
+    }
+
+    public String getLogin() {
+        return login;
     }
 } 
