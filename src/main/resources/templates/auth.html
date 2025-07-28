@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h2>Авторизация</h2>
+    <div class="tab-container">
+        <button class="tab-btn active" id="loginTab" onclick="showTab('login')">Вход</button>
+        <button class="tab-btn" id="registerTab" onclick="showTab('register')">Регистрация</button>
+    </div>
+    <div id="errorBox" class="error-box"></div>
+
+    <div id="loginForm">
+        <input type="text" id="loginLogin" placeholder="Логин">
+        <input type="password" id="loginPassword" placeholder="Пароль">
+        <button onclick="login()">Войти</button>
+    </div>
+
+    <div id="registerForm" style="display:none;">
+        <input type="text" id="registerLogin" placeholder="Логин">
+        <input type="password" id="registerPassword" placeholder="Пароль">
+        <button onclick="register()">Зарегистрироваться</button>
+    </div>
+</div>
+<script>
+    function showTab(tab) {
+        document.getElementById('loginForm').style.display = tab === 'login' ? '' : 'none';
+        document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+        document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+        document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+        hideError();
+    }
+
+    function showError(msg) {
+        const box = document.getElementById('errorBox');
+        box.textContent = msg;
+        box.style.display = 'block';
+    }
+
+    function hideError() {
+        const box = document.getElementById('errorBox');
+        box.style.display = 'none';
+    }
+
+    function login() {
+        const login = document.getElementById('loginLogin').value;
+        const password = document.getElementById('loginPassword').value;
+        if (!login || !password) return showError('Введите логин и пароль');
+        
+        fetch('/auth/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({login, password})
+        })
+            .then(async res => {
+                if (res.ok) {
+                    const jwtResponse = await res.json();
+                    // Сохраняем токены
+                    sessionStorage.setItem('accessToken', jwtResponse.accessToken);
+                    sessionStorage.setItem('refreshToken', jwtResponse.refreshToken);
+                    sessionStorage.setItem('tokenType', jwtResponse.type);
+                    
+                    // Получаем информацию о пользователе
+                    const userResponse = await fetch('/auth/me', {
+                        headers: {
+                            'Authorization': jwtResponse.type + ' ' + jwtResponse.accessToken
+                        }
+                    });
+                    
+                    if (userResponse.ok) {
+                        const user = await userResponse.json();
+                        sessionStorage.setItem('userId', user.id);
+                        sessionStorage.setItem('userLogin', user.login);
+                        window.location.href = '/ui/menu';
+                    } else {
+                        showError('Ошибка получения информации о пользователе');
+                    }
+                } else {
+                    const err = await res.json();
+                    showError(err.error || 'Ошибка входа');
+                }
+            })
+            .catch(e => showError(e.message));
+    }
+
+    function register() {
+        const login = document.getElementById('registerLogin').value;
+        const password = document.getElementById('registerPassword').value;
+        if (!login || !password) return showError('Введите логин и пароль');
+        fetch('/auth/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({login, password})
+        })
+            .then(async (res) => {
+                if (res.ok) {
+                    showTab('login');
+                    showError('Регистрация успешна! Теперь войдите.');
+                } else {
+                    const err = await res.json();
+                    showError(err.error || 'Ошибка регистрации');
+                }
+            })
+            .catch(e => showError(e.message));
+    }
+</script>
+</body>
+</html>

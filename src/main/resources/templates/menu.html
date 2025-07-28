@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Меню</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="profile-container">
+    <button class="profile-btn" title="Профиль" onclick="toggleProfileMenu()">
+        <span class="profile-icon">👤</span>
+    </button>
+    <div id="profile-menu" class="profile-menu">
+        <button class="profile-menu-item" onclick="goToMyProfile(); closeProfileMenu();">
+            👤 Мой профиль
+        </button>
+        <button class="profile-menu-item logout" onclick="logout();">
+            🚪 Выйти
+        </button>
+    </div>
+</div>
+<div class="container">
+    <h2>Меню</h2>
+    <button onclick="startGame('COMPUTER')">Новая игра: компьютер</button>
+    <button onclick="startGame('USER')">Новая игра: пользователь</button>
+    <button onclick="window.location.href='/ui/join'">Присоединиться</button>
+    <button onclick="window.location.href='/ui/user'">Список пользователей</button>
+    <button onclick="window.location.href='/ui/leaderboard'">Таблица лидеров</button>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+    function startGame(opponent) {
+        authFetch('/game?opponent=' + opponent, {method: 'POST'})
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(game => window.location.href = '/ui/game/' + game.id)
+            .catch(() => alert('Ошибка создания игры'));
+    }
+
+    checkAuth();
+    
+    initProfileMenuHandler();
+</script>
+</body>
+</html>

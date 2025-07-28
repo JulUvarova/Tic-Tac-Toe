@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Таблица лидеров</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="profile-container">
+    <button class="profile-btn" title="Профиль" onclick="toggleProfileMenu()">
+        <span class="profile-icon">👤</span>
+    </button>
+    <div id="profile-menu" class="profile-menu">
+        <button class="profile-menu-item" onclick="goToMyProfile(); closeProfileMenu();">
+            👤 Мой профиль
+        </button>
+        <button class="profile-menu-item logout" onclick="logout();">
+            🚪 Выйти
+        </button>
+    </div>
+</div>
+<div class="container">
+    <h2>Таблица лидеров</h2>
+    <div id="leaderboard" class="games-container"></div>
+    <button onclick="window.location.href='/ui/menu'">В меню</button>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+    function loadLeaderboard() {
+        authFetch('/game/leaderboard')
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(async data => {
+                const container = document.getElementById('leaderboard');
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="no-games">Нет данных для отображения</div>';
+                    return;
+                }
+                const loginMap = {};
+                await Promise.all(data.map(async user => {
+                    if (user.userId) {
+                        try {
+                            const res = await authFetch(`/user/${user.userId}`);
+                            if (res.ok) {
+                                const userObj = await res.json();
+                                loginMap[user.userId] = userObj.login;
+                            } else {
+                                loginMap[user.userId] = user.userId;
+                            }
+                        } catch {
+                            loginMap[user.userId] = user.userId;
+                        }
+                    }
+                }));
+                let table = `<table style='width:100%; background:rgba(255,255,255,0.7); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04);'>`;
+                table += `<thead><tr><th>Логин</th><th>Win Ratio</th></tr></thead><tbody>`;
+                data.forEach((user, idx) => {
+                    const login = loginMap[user.userId] ?? user.userId;
+                    table += `<tr>` +
+                        `<td style='text-align:center; cursor:pointer; color:#2c3e50; text-decoration:underline;' onclick="window.location.href='/ui/user/${user.userId}'">${login}</td>` +
+                        `<td style='text-align:center;'>${(user.winRatio * 100).toFixed(1)}%</td>` +
+                        `</tr>`;
+                });
+                table += `</tbody></table>`;
+                container.innerHTML = table;
+            })
+            .catch(() => {
+                document.getElementById('leaderboard').innerHTML = '<div class="error-box" style="display:block">Ошибка загрузки таблицы лидеров</div>';
+            });
+    }
+
+    checkAuth();
+    loadLeaderboard();
+    
+    initProfileMenuHandler();
+</script>
+</body>
+</html> 

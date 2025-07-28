@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="profile-container">
+    <button class="profile-btn" title="Профиль" onclick="toggleProfileMenu()">
+        <span class="profile-icon">👤</span>
+    </button>
+    <div id="profile-menu" class="profile-menu">
+        <button class="profile-menu-item" onclick="goToMyProfile(); closeProfileMenu();">
+            👤 Мой профиль
+        </button>
+        <button class="profile-menu-item logout" onclick="logout();">
+            🚪 Выйти
+        </button>
+    </div>
+</div>
+<div class="container">
+    <h2>Профиль пользователя</h2>
+    <div id="user-info" class="player-info-container"></div>
+    <div id="user-stats-container" style="margin-bottom: 24px;"></div>
+    <div class="tab-container">
+        <button id="completed-btn" class="tab-btn" onclick="toggleGames('completed')">Завершённые игры</button>
+        <button id="current-btn" class="tab-btn" onclick="toggleGames('current')">Текущие игры</button>
+    </div>
+    <div id="completed-games" class="games-container" style="display:none;"></div>
+    <div id="current-games" class="games-container" style="display:none;"></div>
+    <button onclick="window.location.href='/ui/menu'">В меню</button>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+    const userId = (window.location.pathname.match(/\/ui\/user\/([\w-]+)/) || [])[1];
+
+    function loadUser() {
+        authFetch('/user/' + userId)
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(user => {
+                const info = document.getElementById('user-info');
+                info.innerHTML = `<div class='player-info'><b>Логин:</b> ${user.login}</div><div class='player-info'><b>ID:</b> ${user.id}</div>`;
+            })
+            .catch(() => {
+                document.getElementById('user-info').innerHTML = '<div class="error-box" style="display:block">Ошибка загрузки пользователя</div>';
+            });
+    }
+
+    function loadGames(type) {
+        // type: 'completed' | 'current'
+        const status = type === 'completed' ? 'COMPLETED' : 'CURRENT';
+        authFetch(`/game/player/${userId}?type=${status}`)
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(games => {
+                const container = document.getElementById(type + '-games');
+                container.innerHTML = '';
+                if (games.length === 0) {
+                    const noGames = document.createElement('div');
+                    noGames.className = 'no-games';
+                    noGames.textContent = 'Нет игр';
+                    container.appendChild(noGames);
+                } else {
+                    games.forEach(game => {
+                        const gameItem = document.createElement('div');
+                        gameItem.className = 'game-item';
+                        gameItem.textContent = `Игра №${game.id} (${game.status})`;
+                        gameItem.onclick = () => window.location.href = '/ui/game/' + game.id;
+                        container.appendChild(gameItem);
+                    });
+                }
+            })
+            .catch(() => {
+                const container = document.getElementById(type + '-games');
+                container.innerHTML = '<div class="error-box" style="display:block">Ошибка загрузки игр</div>';
+            });
+    }
+
+    function toggleGames(type) {
+        const btn = document.getElementById(type + '-btn');
+        const container = document.getElementById(type + '-games');
+        const isActive = btn.classList.contains('active');
+        // скрываем
+        document.getElementById('completed-btn').classList.remove('active');
+        document.getElementById('current-btn').classList.remove('active');
+        document.getElementById('completed-games').style.display = 'none';
+        document.getElementById('current-games').style.display = 'none';
+        if (!isActive) {
+            btn.classList.add('active');
+            container.style.display = 'flex';
+            loadGames(type);
+        }
+    }
+
+    function loadUserStats() {
+        authFetch(`/game/player/${userId}/stats`)
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(stats => {
+                const statsDiv = document.getElementById('user-stats-container');
+                statsDiv.innerHTML = `
+                    <table style="margin: 0 auto; min-width: 320px; background: rgba(255,255,255,0.7); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                        <thead>
+                            <tr>
+                                <th>Выигрыши</th>
+                                <th>Проигрыши</th>
+                                <th>Ничьи</th>
+                                <th>Рейтинг побед</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center;">${stats.wins}</td>
+                                <td style="text-align:center;">${stats.losses}</td>
+                                <td style="text-align:center;">${stats.draws}</td>
+                                <td style="text-align:center;">${(stats.winRatio * 100).toFixed(1)}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            })
+            .catch(() => {
+                document.getElementById('user-stats-container').innerHTML = '<div class="error-box" style="display:block">Ошибка загрузки статистики</div>';
+            });
+    }
+
+    checkAuth();
+    loadUser();
+    loadUserStats();
+    
+    initProfileMenuHandler();
+</script>
+</body>
+</html>

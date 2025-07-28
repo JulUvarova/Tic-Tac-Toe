@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список пользователей</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<button class="profile-btn" title="Мой профиль" onclick="goToMyProfile()">
+    <span class="profile-icon">👤</span>
+</button>
+<div class="container">
+    <h2>Список пользователей</h2>
+    <div id="users" class="games-container"></div>
+    <button onclick="window.location.href='/ui/menu'">В меню</button>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+    function loadUsers() {
+        authFetch('/user')
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(users => {
+                const usersContainer = document.getElementById('users');
+                usersContainer.innerHTML = '';
+
+                if (users.length === 0) {
+                    const noUsers = document.createElement('div');
+                    noUsers.className = 'no-users';
+                    noUsers.textContent = 'Нет зарегистрированных пользователей';
+                    usersContainer.appendChild(noUsers);
+                } else {
+                    users.forEach(user => {
+                        const userItem = document.createElement('div');
+                        userItem.className = 'game-item';
+                        userItem.textContent = `${user.login}`;
+                        userItem.onclick = () => showUser(user.id);
+                        usersContainer.appendChild(userItem);
+                    });
+                }
+            })
+            .catch(() => alert('Ошибка загрузки списка пользователей'));
+    }
+
+    function showUser(userId) {
+        authFetch('/user/' + userId, {method: 'GET'})
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(user => window.location.href = '/ui/user/' + user.id)
+            .catch(() => alert('Ошибка доступа к карточке игрока'));
+    }
+
+    checkAuth();
+    loadUsers();
+    setInterval(loadUsers, 5000);
+    
+    initProfileMenuHandler();
+</script>
+</body>
+</html>

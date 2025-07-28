@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Присоединиться к игре</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="profile-container">
+    <button class="profile-btn" title="Профиль" onclick="toggleProfileMenu()">
+        <span class="profile-icon">👤</span>
+    </button>
+    <div id="profile-menu" class="profile-menu">
+        <button class="profile-menu-item" onclick="goToMyProfile(); closeProfileMenu();">
+            👤 Мой профиль
+        </button>
+        <button class="profile-menu-item logout" onclick="logout();">
+            🚪 Выйти
+        </button>
+    </div>
+</div>
+<div class="container">
+    <h2>Доступные игры</h2>
+    <div id="games" class="games-container"></div>
+    <button onclick="window.location.href='/ui/menu'">В меню</button>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+    function loadGames() {
+        authFetch('/game')
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(games => {
+                const gamesContainer = document.getElementById('games');
+                gamesContainer.innerHTML = '';
+
+                if (games.length === 0) {
+                    const noGames = document.createElement('div');
+                    noGames.className = 'no-games';
+                    noGames.textContent = 'Нет доступных игр';
+                    gamesContainer.appendChild(noGames);
+                } else {
+                    games.forEach(game => {
+                        const gameItem = document.createElement('div');
+                        gameItem.className = 'game-item';
+                        gameItem.textContent = `Игра №${game.id}`;
+                        gameItem.onclick = () => joinGame(game.id);
+                        gamesContainer.appendChild(gameItem);
+                    });
+                }
+            })
+            .catch(() => alert('Ошибка загрузки игр'));
+    }
+
+    function joinGame(gameId) {
+        authFetch('/game/' + gameId + '/join', {method: 'POST'})
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(game => window.location.href = '/ui/game/' + game.id)
+            .catch(() => alert('Ошибка присоединения к игре'));
+    }
+
+    checkAuth();
+    loadGames();
+    setInterval(loadGames, 5000);
+    
+    initProfileMenuHandler();
+</script>
+</body>
+</html>
