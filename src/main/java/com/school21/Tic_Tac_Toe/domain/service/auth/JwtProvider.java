@@ -36,7 +36,7 @@ public class JwtProvider {
             throw new InvalidUserDataException("User is null");
         }
         final Instant accessExpirationInstant = LocalDateTime.now()
-                .plusMinutes(30)   // Увеличиваем время жизни access token до 30 минут
+                .plusMinutes(60)
                 .atZone(ZoneId.systemDefault())
                 .toInstant();
         final Date accessExpiration = Date.from(accessExpirationInstant);

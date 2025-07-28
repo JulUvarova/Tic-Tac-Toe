@@ -7,9 +7,19 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<button class="profile-btn" title="Мой профиль" onclick="goToMyProfile()">
-    <span class="profile-icon">👤</span>
-</button>
+<div class="profile-container">
+    <button class="profile-btn" title="Профиль" onclick="toggleProfileMenu()">
+        <span class="profile-icon">👤</span>
+    </button>
+    <div id="profile-menu" class="profile-menu">
+        <button class="profile-menu-item" onclick="goToMyProfile(); closeProfileMenu();">
+            👤 Мой профиль
+        </button>
+        <button class="profile-menu-item logout" onclick="logout();">
+            🚪 Выйти
+        </button>
+    </div>
+</div>
 <div class="container">
     <h2>Профиль пользователя</h2>
     <div id="user-info" class="player-info-container"></div>
@@ -71,7 +81,7 @@
         const btn = document.getElementById(type + '-btn');
         const container = document.getElementById(type + '-games');
         const isActive = btn.classList.contains('active');
-        // Скрыть оба
+        // скрываем
         document.getElementById('completed-btn').classList.remove('active');
         document.getElementById('current-btn').classList.remove('active');
         document.getElementById('completed-games').style.display = 'none';
@@ -114,10 +124,12 @@
             });
     }
 
-    // Проверяем авторизацию при загрузке страницы
     checkAuth();
     loadUser();
     loadUserStats();
+    
+    // Инициализируем обработчик закрытия меню профиля
+    initProfileMenuHandler();
 </script>
 </body>
 </html>
