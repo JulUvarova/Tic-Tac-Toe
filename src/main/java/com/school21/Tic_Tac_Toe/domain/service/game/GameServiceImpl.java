@@ -31,6 +31,10 @@ public class GameServiceImpl implements GameService {
         if (!userId.equals(game.getCurrentPlayer())) {
             throw new InvalidGameIdException(String.format("It's not time for user %s move", userId));
         }
+        if(game.getPlayerX() == null || game.getPlayerO() == null) {
+            throw new InvalidMoveException(
+                    String.format("Game %s is not started yet", gameId));
+        }
         if (isGameOver(game)) {
             throw new InvalidMoveException(
                     String.format("Game %s ended", gameId));
