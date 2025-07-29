@@ -19,6 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -291,30 +294,33 @@ public class GameServiceImplTest {
 
     @Test
     void getAvailableGamesForUserId_Success() {
-        List<Game> expectedGames = Arrays.asList(game);
-        when(gameRepository.getAvailableGamesForUser(playerXId)).thenReturn(expectedGames);
+        List<Game> games = Arrays.asList(game);
+        Page<Game> expectedGames = new PageImpl<>(games, PageRequest.of(1, 1), 1);
+        when(gameRepository.getAvailableGamesForUser(playerXId, 1, 1)).thenReturn(expectedGames);
 
-        List<Game> result = gameService.getAvailableGamesForUserId(playerXId);
+        Page<Game> result = gameService.getAvailableGamesForUserId(playerXId, 1, 1);
 
         assertEquals(expectedGames, result);
     }
 
     @Test
     void getCurrentGamesByUserId_Success() {
-        List<Game> expectedGames = Arrays.asList(game);
-        when(gameRepository.getCurrentGamesByUserId(playerXId)).thenReturn(expectedGames);
+        List<Game> games = Arrays.asList(game);
+        Page<Game> expectedGames = new PageImpl<>(games, PageRequest.of(1, 1), 1);
+        when(gameRepository.getCurrentGamesByUserId(playerXId, 1, 1)).thenReturn(expectedGames);
 
-        List<Game> result = gameService.getCurrentGamesByUserId(playerXId);
+        Page<Game> result = gameService.getCurrentGamesByUserId(playerXId, 1, 1);
 
         assertEquals(expectedGames, result);
     }
 
     @Test
     void getCompletedGamesByUserId_Success() {
-        List<Game> expectedGames = Arrays.asList(game);
-        when(gameRepository.getCompletedGamesByUserId(playerXId)).thenReturn(expectedGames);
+        List<Game> games = Arrays.asList(game);
+        Page<Game> expectedGames = new PageImpl<>(games, PageRequest.of(1, 1), 1);
+        when(gameRepository.getCompletedGamesByUserId(playerXId, 1, 1)).thenReturn(expectedGames);
 
-        List<Game> result = gameService.getCompletedGamesByUserId(playerXId);
+        Page<Game> result = gameService.getCompletedGamesByUserId(playerXId, 1, 1);
 
         assertEquals(expectedGames, result);
     }

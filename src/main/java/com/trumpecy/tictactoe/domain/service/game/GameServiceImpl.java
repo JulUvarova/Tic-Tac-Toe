@@ -109,13 +109,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Game> getCurrentGamesByUserId(UUID userId) {
-        return gameRepository.getCurrentGamesByUserId(userId);
+    public Page<Game> getCurrentGamesByUserId(UUID userId, int page, int size) {
+        return gameRepository.getCurrentGamesByUserId(userId, page, size);
     }
 
     @Override
-    public List<Game> getCompletedGamesByUserId(UUID userId) {
-        return gameRepository.getCompletedGamesByUserId(userId);
+    public Page<Game> getCompletedGamesByUserId(UUID userId, int page, int size) {
+        return gameRepository.getCompletedGamesByUserId(userId, page, size);
     }
 
     @Override

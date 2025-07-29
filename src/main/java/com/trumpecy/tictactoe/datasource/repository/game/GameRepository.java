@@ -28,12 +28,12 @@ public interface GameRepository {
     /**
      * A method to get list of current (WAITING, IN_PROGRESS) games for user with userId
      */
-    List<Game> getCurrentGamesByUserId(UUID userId);
+    Page<Game> getCurrentGamesByUserId(UUID userId, int page, int size);
 
     /**
      * A method to get list of completed (O_WINS, X_WINS, DRAW) games for user with userId
      */
-    List<Game> getCompletedGamesByUserId(UUID userId);
+    Page<Game> getCompletedGamesByUserId(UUID userId, int page, int size);
 
     /**
      * A method to get amount of wins, losses, draws for user

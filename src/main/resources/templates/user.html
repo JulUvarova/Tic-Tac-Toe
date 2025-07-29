@@ -29,11 +29,16 @@
         <button id="current-btn" class="tab-btn" onclick="toggleGames('current')">Текущие игры</button>
     </div>
     <div id="completed-games" class="games-container" style="display:none;"></div>
+    <div id="completed-games-pagination"></div>
     <div id="current-games" class="games-container" style="display:none;"></div>
+    <div id="current-games-pagination"></div>
     <button onclick="window.location.href='/ui/menu'">В меню</button>
 </div>
 <script src="/js/auth.js"></script>
 <script>
+    let currentPage = 0;
+    const pageSize = 5;
+
     const userId = (window.location.pathname.match(/\/ui\/user\/([\w-]+)/) || [])[1];
 
     function loadUser() {
@@ -48,14 +53,15 @@
             });
     }
 
-    function loadGames(type) {
-        // type: 'completed' | 'current'
+    function loadGames(type, page = 0) {
         const status = type === 'completed' ? 'COMPLETED' : 'CURRENT';
-        authFetch(`/game/player/${userId}?type=${status}`)
+        authFetch(`/game/player/${userId}?type=${status}&page=${page}&size=${pageSize}`)
             .then(res => res.ok ? res.json() : Promise.reject())
-            .then(games => {
+            .then(data => {
                 const container = document.getElementById(type + '-games');
                 container.innerHTML = '';
+
+                const games = data.content || [];
                 if (games.length === 0) {
                     const noGames = document.createElement('div');
                     noGames.className = 'no-games';
@@ -70,11 +76,36 @@
                         container.appendChild(gameItem);
                     });
                 }
+                renderGamesPagination(type, data.totalPages, data.number);
             })
             .catch(() => {
                 const container = document.getElementById(type + '-games');
                 container.innerHTML = '<div class="error-box" style="display:block">Ошибка загрузки игр</div>';
             });
+    }
+
+    function renderGamesPagination(type, totalPages, pageNumber) {
+        const pagDiv = document.getElementById(`${type}-games-pagination`);
+        pagDiv.innerHTML = "";
+
+        if (totalPages <= 1) return;
+
+        const btnPrev = document.createElement('button');
+        btnPrev.textContent = '<';
+        btnPrev.disabled = pageNumber <= 0;
+        btnPrev.onclick = () => loadGames(type, pageNumber - 1);
+        pagDiv.appendChild(btnPrev);
+
+        const span = document.createElement('span');
+        span.style.margin = '0 10px';
+        span.textContent = `Страница ${pageNumber + 1} из ${totalPages}`;
+        pagDiv.appendChild(span);
+
+        const btnNext = document.createElement('button');
+        btnNext.textContent = '>';
+        btnNext.disabled = pageNumber >= totalPages - 1;
+        btnNext.onclick = () => loadGames(type, pageNumber + 1);
+        pagDiv.appendChild(btnNext);
     }
 
     function toggleGames(type) {
@@ -86,10 +117,15 @@
         document.getElementById('current-btn').classList.remove('active');
         document.getElementById('completed-games').style.display = 'none';
         document.getElementById('current-games').style.display = 'none';
+        // скрываем пагинации
+        document.getElementById('completed-games-pagination').style.display = 'none';
+        document.getElementById('current-games-pagination').style.display = 'none';
+
         if (!isActive) {
             btn.classList.add('active');
             container.style.display = 'flex';
-            loadGames(type);
+            document.getElementById(`${type}-games-pagination`).style.display = 'block';
+            loadGames(type, 0)
         }
     }
 
@@ -127,7 +163,7 @@
     checkAuth();
     loadUser();
     loadUserStats();
-    
+
     initProfileMenuHandler();
 </script>
 </body>

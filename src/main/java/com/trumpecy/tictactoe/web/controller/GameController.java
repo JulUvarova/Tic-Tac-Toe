@@ -107,13 +107,8 @@ public class GameController {
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
 
         Page<Game> games = gameService.getAvailableGamesForUserId(userId, page, size);
-        PageDto<GameDtoResponse> pageResponse = new PageDto<>(
-                games.getContent().stream().map(GameWebMapper::toGameResponseDto).toList(),
-                games.getTotalPages(),
-                games.getTotalElements(),
-                games.getNumber()
-        );
-        log.info("Got {} games on {}nd page", pageResponse.getContent().size(), pageResponse.getNumber());
+        PageDto<GameDtoResponse> pageResponse = getGamePageResponse(games);
+        log.info("Got {}  available games on {}nd page", pageResponse.getContent().size(), pageResponse.getNumber());
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
                 .body(pageResponse);
@@ -123,13 +118,19 @@ public class GameController {
             description = "Get CURRENT (with status IN_PROGRESS, WAITING) or COMPLETED (with status O_WIN, X_WIN or DRAW) games, where user is player")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful")})
     @GetMapping("/player/{userId}")
-    public ResponseEntity<List<GameDtoResponse>> getGamesList(@RequestParam(defaultValue = "CURRENT") GameStatusType type, @PathVariable UUID userId) {
+    public ResponseEntity<PageDto<GameDtoResponse>> getGamesList(
+            @RequestParam(defaultValue = "CURRENT") GameStatusType type,
+            @RequestParam int page,
+            @RequestParam(defaultValue = "5") int size,
+            @PathVariable UUID userId
+    ) {
         log.info("Getting {} games...", type);
-        List<GameDtoResponse> games = findGames(type, userId);
-        log.info("Got {} {} games", games.size(), type);
+        Page<Game> games = findGames(type, userId, page, size);
+        PageDto<GameDtoResponse> pageResponse = getGamePageResponse(games);
+        log.info("Got {} {} games on {}nd page", pageResponse.getContent().size(), type, pageResponse.getNumber());
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
-                .body(games);
+                .body(pageResponse);
     }
 
     @Operation(summary = "Get user stats",
@@ -183,13 +184,24 @@ public class GameController {
         return UUID.fromString(authentication.getPrincipal().toString());
     }
 
-    private List<GameDtoResponse> findGames(GameStatusType type, UUID userId) {
-        List<Game> games = List.of();
+    private Page<Game> findGames(GameStatusType type, UUID userId, int page, int size) {
         switch (type) {
-            case CURRENT -> games = gameService.getCurrentGamesByUserId(userId);
-            case COMPLETED -> games = gameService.getCompletedGamesByUserId(userId);
+            case CURRENT -> {
+                return gameService.getCurrentGamesByUserId(userId, page, size);
+            }
+            case COMPLETED -> {
+                return gameService.getCompletedGamesByUserId(userId, page, size);
+            }
         }
+        return Page.empty();
+    }
 
-        return games.stream().map(GameWebMapper::toGameResponseDto).toList();
+    private PageDto<GameDtoResponse> getGamePageResponse(Page<Game> games) {
+        return new PageDto<>(
+                games.getContent().stream().map(GameWebMapper::toGameResponseDto).toList(),
+                games.getTotalPages(),
+                games.getTotalElements(),
+                games.getNumber()
+        );
     }
 }

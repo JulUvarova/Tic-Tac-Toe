@@ -49,25 +49,25 @@ public class GameRepositoryImpl implements GameRepository {
     }
 
     @Override
-    public List<Game> getCurrentGamesByUserId(UUID userId) {
+    public Page<Game> getCurrentGamesByUserId(UUID userId, int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "startTime");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
         return gameRepository.findGamesByStatusInAndPlayer(
                         List.of(GameStatus.WAITING, GameStatus.IN_PROGRESS),
                         userId,
-                        Sort.by(Sort.Direction.ASC, "startTime"))
-                .stream()
-                .map(GameDataMapper::toModel)
-                .toList();
+                        pageRequest)
+                .map(GameDataMapper::toModel);
     }
 
     @Override
-    public List<Game> getCompletedGamesByUserId(UUID userId) {
+    public Page<Game> getCompletedGamesByUserId(UUID userId, int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "startTime");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
         return gameRepository.findGamesByStatusInAndPlayer(
                         List.of(GameStatus.DRAW, GameStatus.O_WINS, GameStatus.X_WINS),
                         userId,
-                        Sort.by(Sort.Direction.ASC, "startTime"))
-                .stream()
-                .map(GameDataMapper::toModel)
-                .toList();
+                        pageRequest)
+                .map(GameDataMapper::toModel);
     }
 
     @Override

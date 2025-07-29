@@ -20,9 +20,9 @@ public interface GameJpaRepository extends JpaRepository<GameEntity, UUID> {
     @Query("SELECT g FROM games g " +
             "WHERE g.status IN :statusList " +
             "AND (g.playerX = :userId OR g.playerO = :userId)")
-    List<GameEntity> findGamesByStatusInAndPlayer(@Param("statusList") List<GameStatus> statusList,
+    Page<GameEntity> findGamesByStatusInAndPlayer(@Param("statusList") List<GameStatus> statusList,
                                                   @Param("userId") UUID userId,
-                                                  Sort sort);
+                                                  PageRequest pageRequest);
 
     @Query("SELECT :userId AS userId, " +
             "   COALESCE(SUM(CASE " +
