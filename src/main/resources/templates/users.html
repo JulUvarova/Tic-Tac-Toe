@@ -13,17 +13,24 @@
 <div class="container">
     <h2>Список пользователей</h2>
     <div id="users" class="games-container"></div>
+    <!-- Пагинация: добавлено -->
+    <div id="pagination" style="margin-top: 15px;"></div> <!-- --->
     <button onclick="window.location.href='/ui/menu'">В меню</button>
 </div>
 <script src="/js/auth.js"></script>
 <script>
-    function loadUsers() {
-        authFetch('/user')
+    let currentPage = 0;
+    const pageSize = 5;  // !!! по 5 на странице
+
+    function loadUsers(page = 0) { // page = 0 по умолчанию
+        authFetch(`/user?page=${page}&size=${pageSize}`)
             .then(res => res.ok ? res.json() : Promise.reject())
-            .then(users => {
+            .then(data => {
+                // Ожидается формат { content, totalPages, totalElements, number }
                 const usersContainer = document.getElementById('users');
                 usersContainer.innerHTML = '';
 
+                const users = data.content || [];
                 if (users.length === 0) {
                     const noUsers = document.createElement('div');
                     noUsers.className = 'no-users';
@@ -38,8 +45,35 @@
                         usersContainer.appendChild(userItem);
                     });
                 }
+                renderPagination(data.totalPages, data.number);
+                currentPage = data.number; // Обновляем текущую страницу
             })
             .catch(() => alert('Ошибка загрузки списка пользователей'));
+    }
+
+    function renderPagination(totalPages, pageNumber) {
+        const pagDiv = document.getElementById('pagination');
+        pagDiv.innerHTML = ''; // очищаем
+
+        // кнопка назад
+        const btnPrev = document.createElement('button');
+        btnPrev.textContent = '<';
+        btnPrev.disabled = pageNumber <= 0;
+        btnPrev.onclick = () => loadUsers(pageNumber - 1);
+        pagDiv.appendChild(btnPrev);
+
+        // Страницы
+        const span = document.createElement('span');
+        span.style.margin = '0 10px';
+        span.textContent = `Страница ${pageNumber + 1} из ${totalPages}`;
+        pagDiv.appendChild(span);
+
+        // кнопка вперед
+        const btnNext = document.createElement('button');
+        btnNext.textContent = '>';
+        btnNext.disabled = pageNumber >= totalPages - 1;
+        btnNext.onclick = () => loadUsers(pageNumber + 1);
+        pagDiv.appendChild(btnNext);
     }
 
     function showUser(userId) {
@@ -50,9 +84,8 @@
     }
 
     checkAuth();
-    loadUsers();
-    setInterval(loadUsers, 5000);
-    
+    loadUsers(0); // загружаем первую страницу
+
     initProfileMenuHandler();
 </script>
 </body>

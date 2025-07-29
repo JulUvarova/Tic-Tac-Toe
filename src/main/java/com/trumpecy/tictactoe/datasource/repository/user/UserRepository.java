@@ -1,8 +1,8 @@
 package com.trumpecy.tictactoe.datasource.repository.user;
 
 import com.trumpecy.tictactoe.domain.model.user.User;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,7 +11,7 @@ public interface UserRepository {
 
     void save(User newUser);
 
-    List<User> findAll();
+    Page<User> findAll(int page, int size);
 
     Optional<User> findById(UUID id);
 }

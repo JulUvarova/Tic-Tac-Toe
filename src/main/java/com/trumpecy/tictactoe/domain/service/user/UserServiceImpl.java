@@ -6,9 +6,9 @@ import com.trumpecy.tictactoe.exception.EntityNotFoundException;
 import com.trumpecy.tictactoe.exception.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -18,8 +18,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Page<User> getAllUsersPageable(int page, int size) {
+        return userRepository.findAll(page, size);
     }
 
     @Override

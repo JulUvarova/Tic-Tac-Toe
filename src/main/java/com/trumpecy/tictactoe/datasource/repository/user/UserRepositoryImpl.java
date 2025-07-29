@@ -4,10 +4,11 @@ import com.trumpecy.tictactoe.datasource.mapper.UserDataMapper;
 import com.trumpecy.tictactoe.datasource.model.UserEntity;
 import com.trumpecy.tictactoe.domain.model.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,11 +32,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll(Sort.by(Sort.Direction.ASC, "login"))
-                .stream()
-                .map(UserDataMapper::toModel)
-                .toList();
+    public Page<User> findAll(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "login");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return userRepository.findAll(pageRequest)
+                .map(UserDataMapper::toModel);
     }
 
     @Override

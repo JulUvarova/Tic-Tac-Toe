@@ -3,6 +3,7 @@ package com.trumpecy.tictactoe.web.controller;
 import com.trumpecy.tictactoe.domain.model.user.User;
 import com.trumpecy.tictactoe.domain.service.user.UserService;
 import com.trumpecy.tictactoe.web.mapper.UserWebMapper;
+import com.trumpecy.tictactoe.web.model.PageDto;
 import com.trumpecy.tictactoe.web.model.user.UserDtoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,13 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -49,13 +47,22 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Successful"),
     })
     @GetMapping
-    public ResponseEntity<List<UserDtoResponse>> getAllUsers() {
+    public ResponseEntity<PageDto<UserDtoResponse>> getAllUsers(
+            @RequestParam int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
         log.info("Getting all users...");
-        List<UserDtoResponse> users = userService.getAllUsers().stream().map(UserWebMapper::toDto).collect(Collectors.toList());
+        Page<User> userPage = userService.getAllUsersPageable(page, size);
 
-        log.info("Got {} users", users.size());
+        PageDto<UserDtoResponse> pageResponse = new PageDto<>(
+                userPage.getContent().stream().map(UserWebMapper::toDto).collect(Collectors.toList()),
+                userPage.getTotalPages(),
+                userPage.getTotalElements(),
+                userPage.getNumber()
+        );
+        log.info("Got {} users on {}nd page", pageResponse.getContent().size(), pageResponse.getNumber());
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
-                .body(users);
+                .body(pageResponse);
     }
 }
