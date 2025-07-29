@@ -4,6 +4,7 @@ import com.trumpecy.tictactoe.domain.model.game.Game;
 import com.trumpecy.tictactoe.domain.service.game.GameService;
 import com.trumpecy.tictactoe.web.mapper.GameWebMapper;
 import com.trumpecy.tictactoe.web.mapper.StatsWebMapper;
+import com.trumpecy.tictactoe.web.model.PageDto;
 import com.trumpecy.tictactoe.web.model.game.GameDtoRequest;
 import com.trumpecy.tictactoe.web.model.game.GameDtoResponse;
 import com.trumpecy.tictactoe.web.model.game.GameStatusType;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -97,17 +99,24 @@ public class GameController {
             description = "Get games with status WAITING and one of player isn't requester")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful")})
     @GetMapping()
-    public ResponseEntity<List<GameDtoResponse>> getGamesList() {
+    public ResponseEntity<PageDto<GameDtoResponse>> getGamesList(
+            @RequestParam int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
         log.info("Getting available games...");
         UUID userId = extractUserId(SecurityContextHolder.getContext().getAuthentication());
-        List<GameDtoResponse> games = gameService.getAvailableGamesForUserId(userId)
-                .stream()
-                .map(GameWebMapper::toGameResponseDto)
-                .toList();
-        log.info("Got {} games", games.size());
+
+        Page<Game> games = gameService.getAvailableGamesForUserId(userId, page, size);
+        PageDto<GameDtoResponse> pageResponse = new PageDto<>(
+                games.getContent().stream().map(GameWebMapper::toGameResponseDto).toList(),
+                games.getTotalPages(),
+                games.getTotalElements(),
+                games.getNumber()
+        );
+        log.info("Got {} games on {}nd page", pageResponse.getContent().size(), pageResponse.getNumber());
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
-                .body(games);
+                .body(pageResponse);
     }
 
     @Operation(summary = "Get user's games",

@@ -13,6 +13,7 @@ import com.trumpecy.tictactoe.exception.InvalidMoveException;
 import com.trumpecy.tictactoe.web.model.game.OpponentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class GameServiceImpl implements GameService {
         if (!userId.equals(game.getCurrentPlayer())) {
             throw new InvalidGameIdException(String.format("It's not time for user %s move", userId));
         }
-        if(game.getPlayerX() == null || game.getPlayerO() == null) {
+        if (game.getPlayerX() == null || game.getPlayerO() == null) {
             throw new InvalidMoveException(
                     String.format("Game %s is not started yet", gameId));
         }
@@ -103,8 +104,8 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Game> getAvailableGamesForUserId(UUID userId) {
-        return gameRepository.getAvailableGamesForUser(userId);
+    public Page<Game> getAvailableGamesForUserId(UUID userId, int page, int size) {
+        return gameRepository.getAvailableGamesForUser(userId, page, size);
     }
 
     @Override

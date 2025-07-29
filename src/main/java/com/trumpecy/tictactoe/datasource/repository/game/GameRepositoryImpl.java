@@ -8,6 +8,8 @@ import com.trumpecy.tictactoe.domain.model.game.GameStatus;
 import com.trumpecy.tictactoe.domain.model.stats.UserRatio;
 import com.trumpecy.tictactoe.domain.model.stats.UserStats;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
@@ -36,14 +38,14 @@ public class GameRepositoryImpl implements GameRepository {
     }
 
     @Override
-    public List<Game> getAvailableGamesForUser(UUID userId) {
+    public Page<Game> getAvailableGamesForUser(UUID userId, int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "startTime");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
         return gameRepository.getGameEntityByStatusAndPlayerXNot(
                         GameStatus.WAITING,
                         userId,
-                        Sort.by(Sort.Direction.ASC, "startTime"))
-                .stream()
-                .map(GameDataMapper::toModel)
-                .toList();
+                        pageRequest)
+                .map(GameDataMapper::toModel);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.trumpecy.tictactoe.domain.model.game.Game;
 import com.trumpecy.tictactoe.domain.model.stats.UserRatio;
 import com.trumpecy.tictactoe.domain.model.stats.UserStats;
 import com.trumpecy.tictactoe.web.model.game.OpponentType;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public interface GameService {
     /**
      * A method to get list of available (WAITING) games. It excludes games with userId
      */
-    List<Game> getAvailableGamesForUserId(UUID userId);
+    Page<Game> getAvailableGamesForUserId(UUID userId, int page, int size);
 
     /**
      * A method to get list of current (WAITING, IN_PROGRESS) games for user with userId

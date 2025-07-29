@@ -3,6 +3,7 @@ package com.trumpecy.tictactoe.datasource.repository.game;
 import com.trumpecy.tictactoe.domain.model.game.Game;
 import com.trumpecy.tictactoe.domain.model.stats.UserRatio;
 import com.trumpecy.tictactoe.domain.model.stats.UserStats;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public interface GameRepository {
     /**
      * A method to get list game with status=WAITING without userId.
      */
-    List<Game> getAvailableGamesForUser(UUID userId);
+    Page<Game> getAvailableGamesForUser(UUID userId, int page, int size);
 
     /**
      * A method to get list of current (WAITING, IN_PROGRESS) games for user with userId

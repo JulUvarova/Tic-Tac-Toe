@@ -55,7 +55,7 @@ public class UserController {
         Page<User> userPage = userService.getAllUsersPageable(page, size);
 
         PageDto<UserDtoResponse> pageResponse = new PageDto<>(
-                userPage.getContent().stream().map(UserWebMapper::toDto).collect(Collectors.toList()),
+                userPage.getContent().stream().map(UserWebMapper::toDto).toList(),
                 userPage.getTotalPages(),
                 userPage.getTotalElements(),
                 userPage.getNumber()

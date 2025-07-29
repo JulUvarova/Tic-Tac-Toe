@@ -7,33 +7,28 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div class="profile-container">
-    <button class="profile-btn" title="Профиль" onclick="toggleProfileMenu()">
-        <span class="profile-icon">👤</span>
-    </button>
-    <div id="profile-menu" class="profile-menu">
-        <button class="profile-menu-item" onclick="goToMyProfile(); closeProfileMenu();">
-            👤 Мой профиль
-        </button>
-        <button class="profile-menu-item logout" onclick="logout();">
-            🚪 Выйти
-        </button>
-    </div>
-</div>
+<button class="profile-btn" title="Мой профиль" onclick="goToMyProfile()">
+    <span class="profile-icon">👤</span>
+</button>
 <div class="container">
     <h2>Доступные игры</h2>
     <div id="games" class="games-container"></div>
+    <div id="pagination" style="margin-top: 15px;"></div>
     <button onclick="window.location.href='/ui/menu'">В меню</button>
 </div>
 <script src="/js/auth.js"></script>
 <script>
-    function loadGames() {
-        authFetch('/game')
+    let currentPage = 0;
+    const pageSize = 5;  // !!! по 5 на странице
+
+    function loadGames(page = 0) {
+        authFetch(`/game?page=${page}&size=${pageSize}`)
             .then(res => res.ok ? res.json() : Promise.reject())
-            .then(games => {
+            .then(data => {
                 const gamesContainer = document.getElementById('games');
                 gamesContainer.innerHTML = '';
 
+                const games = data.content || [];
                 if (games.length === 0) {
                     const noGames = document.createElement('div');
                     noGames.className = 'no-games';
@@ -48,8 +43,35 @@
                         gamesContainer.appendChild(gameItem);
                     });
                 }
+                renderPagination(data.totalPages, data.number);
+                currentPage = data.number; // Обновляем текущую страницу
             })
             .catch(() => alert('Ошибка загрузки игр'));
+    }
+
+    function renderPagination(totalPages, pageNumber) {
+        const pagDiv = document.getElementById('pagination');
+        pagDiv.innerHTML = ''; // очищаем
+
+        // кнопка назад
+        const btnPrev = document.createElement('button');
+        btnPrev.textContent = '<';
+        btnPrev.disabled = pageNumber <= 0;
+        btnPrev.onclick = () => loadGames(pageNumber - 1);
+        pagDiv.appendChild(btnPrev);
+
+        // Страницы
+        const span = document.createElement('span');
+        span.style.margin = '0 10px';
+        span.textContent = `Страница ${pageNumber + 1} из ${totalPages}`;
+        pagDiv.appendChild(span);
+
+        // кнопка вперед
+        const btnNext = document.createElement('button');
+        btnNext.textContent = '>';
+        btnNext.disabled = pageNumber >= totalPages - 1;
+        btnNext.onclick = () => loadGames(pageNumber + 1);
+        pagDiv.appendChild(btnNext);
     }
 
     function joinGame(gameId) {
@@ -60,9 +82,8 @@
     }
 
     checkAuth();
-    loadGames();
-    setInterval(loadGames, 5000);
-    
+    loadGames(0);
+
     initProfileMenuHandler();
 </script>
 </body>

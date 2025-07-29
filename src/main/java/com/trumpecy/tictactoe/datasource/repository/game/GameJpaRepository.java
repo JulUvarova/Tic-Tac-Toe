@@ -4,6 +4,8 @@ import com.trumpecy.tictactoe.datasource.model.GameEntity;
 import com.trumpecy.tictactoe.datasource.model.UserRatioProjection;
 import com.trumpecy.tictactoe.datasource.model.UserStatsProjection;
 import com.trumpecy.tictactoe.domain.model.game.GameStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface GameJpaRepository extends JpaRepository<GameEntity, UUID> {
-    List<GameEntity> getGameEntityByStatusAndPlayerXNot(GameStatus gameStatus, UUID userId, Sort sort);
+    Page<GameEntity> getGameEntityByStatusAndPlayerXNot(GameStatus gameStatus, UUID userId, PageRequest pageRequest);
 
     @Query("SELECT g FROM games g " +
             "WHERE g.status IN :statusList " +
