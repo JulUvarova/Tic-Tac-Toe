@@ -1,6 +1,7 @@
 package com.trumpecy.tictactoe.domain.service;
 
 import com.trumpecy.tictactoe.datasource.repository.game.GameRepository;
+import com.trumpecy.tictactoe.di.MinimaxAgent;
 import com.trumpecy.tictactoe.domain.model.game.Board;
 import com.trumpecy.tictactoe.domain.model.game.Game;
 import com.trumpecy.tictactoe.domain.model.game.GameConstant;
@@ -23,10 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -34,6 +32,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
+    @Mock
+    private MinimaxAgent agent;
 
     @Mock
     private GameRepository gameRepository;
@@ -63,7 +63,8 @@ public class GameServiceImplTest {
 
     @Test
     void getNextMove_AgentMakesMove() {
-        game.setPlayerO(GameConstant.MINIMAX_AGENT_UUID);
+        when(agent.getId()).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        game.setPlayerO(agent.getId());
         game.setCurrentPlayer(playerXId);
 
         int[][] userBoard = new int[][]{
@@ -89,7 +90,8 @@ public class GameServiceImplTest {
 
     @Test
     void getNextMove_AgentMakesMoveAndWin() {
-        game.setPlayerO(GameConstant.MINIMAX_AGENT_UUID);
+        when(agent.getId()).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        game.setPlayerO(agent.getId());
         game.setCurrentPlayer(playerXId);
 
         game.setBoard(new Board(new int[][]{
@@ -106,13 +108,14 @@ public class GameServiceImplTest {
 
         Game result = gameService.getNextMove(game.getId(), playerXId, userBoard);
 
-        assertEquals(GameStatus.O_WINS, result.getBoard().checkGameStatus());
+        assertEquals(GameStatus.O_WINS, result.getStatus());
         verify(gameRepository).saveGame(game);
     }
 
     @Test
     void getNextMove_AgentMakesMoveForDraw() {
-        game.setPlayerO(GameConstant.MINIMAX_AGENT_UUID);
+        when(agent.getId()).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        game.setPlayerO(agent.getId());
         game.setCurrentPlayer(playerXId);
         game.setBoard(new Board(new int[][]{
                 {0, 1, 0},
@@ -129,7 +132,7 @@ public class GameServiceImplTest {
         Game result = gameService.getNextMove(game.getId(), playerXId, userBoard);
 
         assertEquals(GameConstant.PLAYER_O, result.getBoard().getMatrix()[0][2]);
-        assertEquals(GameStatus.IN_PROGRESS, result.getBoard().checkGameStatus());
+        assertEquals(GameStatus.IN_PROGRESS, result.getStatus());
         verify(gameRepository).saveGame(game);
     }
 
@@ -150,7 +153,7 @@ public class GameServiceImplTest {
 
         Game result = gameService.getNextMove(game.getId(), playerXId, userBoard);
 
-        assertEquals(GameStatus.X_WINS, result.getBoard().checkGameStatus());
+        assertEquals(GameStatus.X_WINS, result.getStatus());
         assertArrayEquals(userBoard, result.getBoard().getMatrix());
     }
 
@@ -212,7 +215,7 @@ public class GameServiceImplTest {
         Game result = gameService.createNewGame(playerXId, OpponentType.COMPUTER);
 
         assertEquals(playerXId, result.getPlayerX());
-        assertEquals(GameConstant.MINIMAX_AGENT_UUID, result.getPlayerO());
+        assertEquals(agent.getId(), result.getPlayerO());
         assertEquals(playerXId, result.getCurrentPlayer());
         assertEquals(GameStatus.IN_PROGRESS, result.getStatus());
         verify(gameRepository).saveGame(result);
@@ -294,7 +297,7 @@ public class GameServiceImplTest {
 
     @Test
     void getAvailableGamesForUserId_Success() {
-        List<Game> games = Arrays.asList(game);
+        List<Game> games = Collections.singletonList(game);
         Page<Game> expectedGames = new PageImpl<>(games, PageRequest.of(1, 1), 1);
         when(gameRepository.getAvailableGamesForUser(playerXId, 1, 1)).thenReturn(expectedGames);
 
@@ -305,7 +308,7 @@ public class GameServiceImplTest {
 
     @Test
     void getCurrentGamesByUserId_Success() {
-        List<Game> games = Arrays.asList(game);
+        List<Game> games = Collections.singletonList(game);
         Page<Game> expectedGames = new PageImpl<>(games, PageRequest.of(1, 1), 1);
         when(gameRepository.getCurrentGamesByUserId(playerXId, 1, 1)).thenReturn(expectedGames);
 
@@ -316,7 +319,7 @@ public class GameServiceImplTest {
 
     @Test
     void getCompletedGamesByUserId_Success() {
-        List<Game> games = Arrays.asList(game);
+        List<Game> games = Collections.singletonList(game);
         Page<Game> expectedGames = new PageImpl<>(games, PageRequest.of(1, 1), 1);
         when(gameRepository.getCompletedGamesByUserId(playerXId, 1, 1)).thenReturn(expectedGames);
 

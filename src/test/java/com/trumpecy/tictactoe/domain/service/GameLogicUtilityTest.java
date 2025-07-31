@@ -1,89 +1,89 @@
-package com.trumpecy.tictactoe.domain.model;
+package com.trumpecy.tictactoe.domain.service;
 
-import com.trumpecy.tictactoe.domain.model.game.Board;
 import com.trumpecy.tictactoe.domain.model.game.GameStatus;
+import com.trumpecy.tictactoe.domain.service.game.GameLogicUtility;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class BoardModelTest {
+class GameLogicUtilityTest {
     @Test
     public void testHorizontalWinFirstRowX() {
-        Board board = new Board(new int[][]{
+        int[][] board = new int[][]{
                 {1, 1, 1},
                 {2, 0, 2},
                 {0, 0, 0}
-        });
-        assertEquals(GameStatus.X_WINS, board.checkGameStatus());
+        };
+        assertEquals(GameStatus.X_WINS, GameLogicUtility.checkGameStatus(board));
     }
 
     @Test
     public void testHorizontalWinSecondRowO() {
-        Board board = new Board(new int[][]{
+        int[][] board = new int[][]{
                 {1, 0, 1},
                 {2, 2, 2},
                 {0, 1, 0}
-        });
-        assertEquals(GameStatus.O_WINS, board.checkGameStatus());
+        };
+        assertEquals(GameStatus.O_WINS, GameLogicUtility.checkGameStatus(board));
     }
 
     @Test
     public void testVerticalWinFirstColumnX() {
-        Board board = new Board(new int[][]{
+        int[][] board = new int[][]{
                 {1, 2, 0},
                 {1, 2, 0},
                 {1, 0, 0}
-        });
-        assertEquals(GameStatus.X_WINS, board.checkGameStatus());
+        };
+        assertEquals(GameStatus.X_WINS, GameLogicUtility.checkGameStatus(board));
     }
 
     @Test
     public void testVerticalWinThirdColumnO() {
-        Board board = new Board(new int[][]{
+        int[][] board = new int[][]{
                 {0, 1, 2},
                 {0, 1, 2},
                 {1, 0, 2}
-        });
-        assertEquals(GameStatus.O_WINS, board.checkGameStatus());
+        };
+        assertEquals(GameStatus.O_WINS, GameLogicUtility.checkGameStatus(board));
     }
 
     @Test
     public void testMainDiagonalWinX() {
-        Board board = new Board(new int[][]{
+        int[][] board = new int[][]{
                 {1, 2, 0},
                 {0, 1, 2},
                 {0, 0, 1}
-        });
-        assertEquals(GameStatus.X_WINS, board.checkGameStatus());
+        };
+        assertEquals(GameStatus.X_WINS, GameLogicUtility.checkGameStatus(board));
     }
 
     @Test
     public void testAntiDiagonalWinO() {
-        Board board = new Board(new int[][]{
+        int[][] board = new int[][]{
                 {0, 1, 2},
                 {1, 2, 0},
                 {2, 0, 0}
-        });
-        assertEquals(GameStatus.O_WINS, board.checkGameStatus());
+        };
+        assertEquals(GameStatus.O_WINS, GameLogicUtility.checkGameStatus(board));
     }
 
     @Test
     public void testDraw() {
-        Board board = new Board(new int[][]{
+        int[][] board = new int[][]{
                 {1, 2, 1},
                 {2, 1, 1},
                 {2, 1, 2}
-        });
-        assertEquals(GameStatus.DRAW, board.checkGameStatus());
+        };
+        assertEquals(GameStatus.DRAW, GameLogicUtility.checkGameStatus(board));
     }
 
     @Test
     public void testInProgress() {
-        Board board = new Board(new int[][]{
+        int[][] board = new int[][]{
                 {1, 0, 2},
                 {0, 1, 0},
                 {0, 0, 0}
-        });
-        assertEquals(GameStatus.IN_PROGRESS, board.checkGameStatus());
+        };
+        assertEquals(GameStatus.IN_PROGRESS, GameLogicUtility.checkGameStatus(board));
     }
 }
