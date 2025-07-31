@@ -15,5 +15,5 @@ public class User {
     private UUID id = UUID.randomUUID();
     private String login;
     private String password;
-    private Set<Role> roles = new HashSet<>(Set.of(Role.USER));
+    private Set<Role> roles = new HashSet<>(Set.of(Role.ROLE_USER));
 }
