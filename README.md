@@ -1,120 +1,136 @@
-# Project Backend 05 — Java_Bootcamp
+# 🎮 Tic-Tac-Toe Game
 
-**Summary:** In this project, you will learn how to work with JWT authorization and expand the capabilities of Java-based web applications using Spring.
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.java.net/projects/jdk/21/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.3-green.svg)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-blue.svg)](https://www.docker.com/)
+[![JWT](https://img.shields.io/badge/JWT-Authorization-yellow.svg)](https://jwt.io/)
 
-💡 *[Click here](https://new.oprosso.net/p/4cb31ec3f47a4596bc758ea1861fb624) to share your feedback on this project.* It’s anonymous and will help our team improve the training. We recommend completing the survey right after finishing the project.
+Учебное веб-приложение для игры в крестики-нолики с минимакс алгоритмом или пользователем, поддержкой JWT авторизации, историей игр и таблицей лидеров.
 
-## Contents
+## 🛠 Технологический стек
 
-  - [Chapter I](#chapter-i)
-    - [Instructions](#instructions)
-  - [Chapter II](#chapter-ii)
-    - [General Information](#general-information)
-      - [Token, Session Token, Refresh Token](#token-session-token-refresh-token)
-  - [Chapter III](#chapter-iii)
-    - [Project: Tic-Tac-Toe](#project-tic-tac-toe)
-    - [Task 1. Switching Basic Authorization to JWT](#task-1-switching-basic-authorization-to-jwt)
-    - [Task 2. Adding Support for Game History](#task-2-adding-support-for-game-history)
-    - [Task 3. Adding Leaderboard Support](#task-3-adding-leaderboard-support)
+### Backend
+- **Java 21** - современная версия Java с улучшенной производительностью
+- **Spring Boot 3.5.3** - основной фреймворк для создания веб-приложений
+- **Spring Security** - безопасность и авторизация
+- **Spring Data JPA** - работа с базой данных
+- **JWT (JSON Web Tokens)** - токены для аутентификации
+- **PostgreSQL** - основная база данных
+- **H2 Database** - база данных для разработки и тестирования
 
-## Chapter I
-### Instructions
+### Frontend (в соавторстве с ИИ)
+- **Thymeleaf** - серверный шаблонизатор
+- **HTML5/CSS3** - современная разметка и стили
+- **JavaScript** - интерактивность на стороне клиента
+- **Bootstrap** - адаптивный дизайн
 
-1. Throughout the course, you will experience uncertainty and a severe lack of information — this is normal. Remember that the repository and Google are always available to you, as are your peers and Rocket.Chat. Communicate. Search. Rely on common sense. Do not be afraid of making mistakes.
-2. Pay attention to sources of information. Verify, think, analyze, compare.
-3. Read the assignments carefully. Reread them several times.
-4. It’s best to read the examples carefully as well. They may contain something not explicitly stated in the assignment itself.
-5. You might encounter inconsistencies when something new in the task or example contradicts what you already know. If that happens, try to figure it out. If you fail, make a note under “open questions” and resolve it during your work. Do not leave open questions unresolved.
-6. If a task seems unclear or unachievable, it only seems that way. Try decomposing it. Most likely, individual parts will become clearer.
-7. Along the way, you’ll encounter many different tasks. Those marked with an asterisk (\*) are for more meticulous learners. They are of higher complexity and are not mandatory, but if you do them, you’ll gain additional experience and knowledge.
-8. Do not try to fool the system or those around you. You’ll only be fooling yourself.
-9. Have a question? Ask the neighbor on your right. If that doesn’t help, ask the neighbor on your left.
-10. When using someone’s help, always make sure you understand why, how, and what for. Otherwise, that help is meaningless.
-11. Always push only to the **develop** branch! The **master** branch will be ignored. Work in the **src** directory.
-12. Your directory should not contain any files other than those specified in the tasks.
+### Инфраструктура
+- **Docker & Docker Compose** - контейнеризация приложения
+- **Gradle** - система сборки проекта
+- **Swagger/OpenAPI** - документация API
 
-## Chapter II
-### General Information
+## 📁 Структура проекта
 
-#### Token, Session Token, Refresh Token
+```
+src/
+├── main/
+│   ├── java/com/trumpecy/tictactoe/
+│   │   ├── datasource/          # Слой доступа к данным
+│   │   │   ├── mapper/          # Маппинг между слоями
+│   │   │   ├── model/           # JPA сущности
+│   │   │   └── repository/      # Репозитории для работы с БД
+│   │   ├── di/                  # Конфигурация зависимостей
+│   │   ├── domain/              # Бизнес-логика
+│   │   │   ├── model/           # Доменные модели
+│   │   │   └── service/         # Сервисы
+│   │   ├── exception/           # Обработка исключений
+│   │   ├── security/            # Безопасность
+│   │   └── web/                 # Веб-слой
+│   │       ├── controller/      # REST контроллеры
+│   │       ├── mapper/          # Маппинг DTO
+│   │       └── model/           # DTO модели
+│   └── resources/
+│       ├── static/              # Статические ресурсы
+│       ├── templates/           # HTML шаблоны
+│       └── application*.properties # Конфигурация
+└── test/                        # Тесты
+```
 
-A **token** is a unique string of characters that replaces the user's login and password, preventing leaks of confidential information. Tokens have a specific lifespan and stop working once they expire.
+## 🚀 Быстрый старт
 
-A **session token** gives users the right to perform available actions during their session. It is reusable and has a short lifespan.
+### Предварительные требования
+- Java 21 или выше
+- Docker и Docker Compose
+- Git
 
-A **refresh token** extends the validity of the session token. It is single-use and has a long lifespan.
+### Запуск с помощью Docker (рекомендуется)
 
-**Topics to study:**
+1. **Клонируйте репозиторий**
+  
+2. **Запустите приложение**
+   ```bash
+   ./gradlew clean
+   ./gradlew build
+   sudo docker compose up -d --build
+   ```
+   или для режима разработки:
+   ```bash
+   ./gradlew bootRun -Dspring.profiles.active=dev
+   ```
 
-- Web application;
-- JWT authorization;
-- PostgreSQL;
-- Spring.
+3. **Откройте браузер**
+   - Приложение: http://localhost:8080
+   - База данных: jdbc:postgresql://localhost:5433/tic-tac-toe-db
+   - Swagger UI: http://localhost:8080/swagger-ui.html
 
-## Chapter III
+## 📚 API Документация
 
-### Project: Tic-Tac-Toe
+### Аутентификация
+- `POST /auth/register` - Регистрация нового пользователя
+- `POST /auth/login` - Вход в систему
+- `POST /auth/token` - Обновление access токена
+- `POST /auth/refresh` - Обновление refresh токена
+- `GET /auth/me` - Информация о текущем пользователе
 
-Use the backend project from the previous week (T04).
+### Игры
+- `POST /game` - Создание новой игры
+- `GET /game/{id}` - Получение игры по ID
+- `POST /game/{gameId}` - Сделать ход
+- `POST /game/{gameId}/join` - Присоединиться к игре
+- `GET /game` - Список доступных игр
+- `GET /game/player/{userId}` - Игры пользователя
+- `GET /game/player/{userId}/stats` - Статистика пользователя
+- `GET /game/leaderboard` - Таблица лидеров
 
-### Task 1. Switching Basic Authorization to JWT
+### Пользователи
+- `GET /user/{id}` - Информация о пользователе
 
-- Add a role enumeration with a single **USER** role.
-- Implement role support at all levels.
-- Extend GrantedAuthority for the domain model of the role.
-- Give users a list of roles.
-- Create a JwtRequest model that includes a login and password.
-- Create a JwtResponse model that includes a type, accessToken, and refreshToken.
-- Create a RefreshJwtRequest model that includes refreshToken.
-- Implement a JwtProvider class with the following methods:
-  - use io.jsonwebtoken.Jwts.builder() to generate tokens;
-  - a method to generate an **accessToken** from a User, storing information about the UUID and role in the token's claims (information about the object is stored in claims for future use);
-  - a method of generating a **refreshToken** from a User, storing information about the UUID in the token's claims;
-  - a method to validate the accessToken;
-  - a method to validate the refreshToken;
-  - a method to retrieve claims.
-- Create a JwtAuthentication model that extends Authentication:
-  - for getAuthorities(), return the roles;
-  - for getPrincipal(), return the UUID;
-  - for getName(), return the UUID;
-  - for authentication status, add a separate field.
-- Implement a JwtUtil class with a method to create JwtAuthentication from claims.
-- Update the authorization service that uses the UserService, JwtProvider, and SecurityContextHolder to implement the following methods:
-  - Modify the authorization method so that it now takes a JwtRequest and returns a JwtResponse.
-  - Create a method to refresh the **accessToken** that takes a refreshToken and returns a JwtResponse.
-  - Create a method to refresh the **refreshToken**, which also takes a refreshToken and returns a JwtResponse.
-  - Create a method to get JwtAuthentication.
-- Update the authorization controller by adding or modifying endpoints:
-  - for user authorization;
-  - for updating the **accessToken**;
-  - for updating the **refreshToken**.
-- Modify the behavior of the doFilter method in the AuthFilter class:
-  - Retrieve the token from the Authorization header, which contains "Bearer {accessToken}".
-  - Validate the token using the JwtProvider.
-  - Get claims using JwtProvider.
-  - Use JwtUtil to create JwtAuthentication from the claims.
-  - Set up authentication using SecurityContextHolder.
-- In the Spring Configuration, allow unauthenticated access to the endpoint to update the **accessToken**.
-- Add an endpoint to retrieve user information from the **accessToken**.
+## 🎮 Как играть
 
-### Task 2. Adding Support for Game History
+1. **Регистрация/Вход**
+   - Зарегистрируйтесь или войдите в систему
+   - Получите JWT токен для доступа к игре
 
-- Add a creation date to the game model.
-- Describe a database query to get all completed games by user's UUID.
-- A game is considered completed when it has one of the following states:
-  - The player with the UUID won;
-  - A draw.
-- Add a method to the game service to get all completed games by the user's UUID.
-- Add an endpoint to get all completed games by **accessToken**, accessible only to authenticated users.
+2. **Создание игры**
+   - Выберите тип противника (компьютер или игрок)
+   - Создайте новую игру
 
-### Task 3. Adding Leaderboard Support
+3. **Игровой процесс**
+   - Делайте ходы, кликая по клеткам
+   - Система автоматически определит победителя
+   - Игра сохраняется в истории
 
-- Create a model for information about games won that includes the user's UUID and win ratio.
-- Describe a database query in which:
-  - Retrieve the ratio of the number of games won to the number of losses and draws for each user.
-  - Sort by the win ratio in descending order.
-  - Select the top N records, each of which contains the user's UUID and their win ratio.
-- In the game service, add a method to get the top N best players.
-- Add an endpoint to get the top N best players that takes N (the number of top players) and returns a list of the best players (UUID and login) with their win ratios.
-- The endpoint to get the best players must be accessible only to authenticated users.
+4. **Статистика**
+   - Просматривайте свою статистику
+   - Изучайте таблицу лидеров
+   - Анализируйте историю игр
+
+## 👨‍💻 Автор
+
+Юлия Уварова  - [Telegram](https://t.me/Jun_Uno)
+
+---
+
+⭐ Если этот проект вам понравился, поставьте звездочку!
 
