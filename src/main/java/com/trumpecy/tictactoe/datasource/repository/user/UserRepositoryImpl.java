@@ -19,6 +19,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByLogin(String login) {
+        if (login == null || login.isEmpty()) {
+            return Optional.empty();
+        }
         Optional<UserEntity> user = userRepository.findUserEntityByLogin(login);
         if (user.isPresent()) {
             return Optional.of(UserDataMapper.toModel(user.get()));
@@ -46,5 +49,13 @@ public class UserRepositoryImpl implements UserRepository {
             return Optional.of(UserDataMapper.toModel(user.get()));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Page<User> findAllLoginContains(String search, int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "login");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return userRepository.findByLoginContainingIgnoreCase(search, pageRequest)
+                .map(UserDataMapper::toModel);
     }
 }

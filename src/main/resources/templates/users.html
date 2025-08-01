@@ -12,6 +12,16 @@
 </button>
 <div class="container">
     <h2>Список пользователей</h2>
+    <div class="search-container" style="margin-bottom: 20px;">
+        <input
+                type="text"
+                id="searchInput"
+                placeholder="Поиск по логину..."
+                style="padding: 8px; width: 200px; margin-right: 10px;"
+        >
+        <button onclick="searchUsers()" style="padding: 8px 16px;">Поиск</button>
+        <button onclick="clearSearch()" style="padding: 8px 16px; margin-left: 5px;">Очистить</button>
+    </div>
     <div id="users" class="games-container"></div>
     <div id="pagination" style="margin-top: 15px;"></div>
     <button onclick="window.location.href='/ui/menu'">В меню</button>
@@ -21,8 +31,13 @@
     let currentPage = 0;
     const pageSize = 5;  // !!! по 5 на странице
 
-    function loadUsers(page = 0) { // page = 0 по умолчанию
-        authFetch(`/user?page=${page}&size=${pageSize}`)
+    function loadUsers(page = 0, search = '') { // page = 0 по умолчанию
+        let url = `/user?page=${page}&size=${pageSize}`;
+        if (search && search.trim() !== '') {
+            url += `&search=${encodeURIComponent(search.trim())}`;
+        }
+
+        authFetch(url)
             .then(res => res.ok ? res.json() : Promise.reject())
             .then(data => {
                 // Ожидается формат { content, totalPages, totalElements, number }
@@ -48,6 +63,18 @@
                 currentPage = data.number; // Обновляем текущую страницу
             })
             .catch(() => alert('Ошибка загрузки списка пользователей'));
+    }
+
+    function searchUsers() {
+        const searchValue = document.getElementById('searchInput').value;
+        currentSearch = searchValue;
+        loadUsers(0, searchValue);
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        currentSearch = '';
+        loadUsers(0, '');
     }
 
     function renderPagination(totalPages, pageNumber) {
@@ -81,6 +108,15 @@
             .then(user => window.location.href = '/ui/user/' + user.id)
             .catch(() => alert('Ошибка доступа к карточке игрока'));
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchUsers();
+            }
+        });
+    });
 
     checkAuth();
     loadUsers(0); // загружаем первую страницу

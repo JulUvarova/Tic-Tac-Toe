@@ -14,4 +14,6 @@ public interface UserRepository {
     Page<User> findAll(int page, int size);
 
     Optional<User> findById(UUID id);
+
+    Page<User> findAllLoginContains(String search, int page, int size);
 }

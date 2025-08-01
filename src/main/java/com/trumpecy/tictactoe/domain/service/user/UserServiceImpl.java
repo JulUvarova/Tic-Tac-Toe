@@ -18,8 +18,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public Page<User> getAllUsersPageable(int page, int size) {
-        return userRepository.findAll(page, size);
+    public Page<User> getAllUsersPageable(String search, int page, int size) {
+        if (search == null || search.trim().isEmpty()) {
+            return userRepository.findAll(page, size);
+        }
+        return userRepository.findAllLoginContains(search.trim(), page, size);
     }
 
     @Override

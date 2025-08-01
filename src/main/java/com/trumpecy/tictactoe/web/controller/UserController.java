@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -42,17 +41,20 @@ public class UserController {
                 .body(UserWebMapper.toDto(user));
     }
 
-    @Operation(summary = "Get users' list")
+    @Operation(summary = "Get users' list",
+            description = "If request param exists, it return users' list by requested string." +
+                    "In the other case, it return all users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful"),
     })
     @GetMapping
     public ResponseEntity<PageDto<UserDtoResponse>> getAllUsers(
+            @RequestParam(required = false) String search,
             @RequestParam int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        log.info("Getting all users...");
-        Page<User> userPage = userService.getAllUsersPageable(page, size);
+        log.info("Getting all users with search {}...", search);
+        Page<User> userPage = userService.getAllUsersPageable(search, page, size);
 
         PageDto<UserDtoResponse> pageResponse = new PageDto<>(
                 userPage.getContent().stream().map(UserWebMapper::toDto).toList(),
