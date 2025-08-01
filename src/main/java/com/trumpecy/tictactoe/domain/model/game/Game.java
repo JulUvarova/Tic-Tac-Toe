@@ -21,8 +21,4 @@ public class Game {
     private UUID currentPlayer;
 
     private Instant startTime = Instant.now();
-
-    public void updateStatus() {
-        status = board.checkGameStatus();
-    }
 }

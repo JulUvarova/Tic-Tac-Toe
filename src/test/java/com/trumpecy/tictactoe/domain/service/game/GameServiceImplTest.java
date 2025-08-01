@@ -1,4 +1,4 @@
-package com.trumpecy.tictactoe.domain.service;
+package com.trumpecy.tictactoe.domain.service.game;
 
 import com.trumpecy.tictactoe.datasource.repository.game.GameRepository;
 import com.trumpecy.tictactoe.domain.model.game.Board;
@@ -7,7 +7,6 @@ import com.trumpecy.tictactoe.domain.model.game.GameConstant;
 import com.trumpecy.tictactoe.domain.model.game.GameStatus;
 import com.trumpecy.tictactoe.domain.model.stats.UserRatio;
 import com.trumpecy.tictactoe.domain.model.stats.UserStats;
-import com.trumpecy.tictactoe.domain.service.game.GameServiceImpl;
 import com.trumpecy.tictactoe.exception.EntityNotFoundException;
 import com.trumpecy.tictactoe.exception.InvalidGameIdException;
 import com.trumpecy.tictactoe.exception.InvalidMoveException;
@@ -28,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.trumpecy.tictactoe.domain.service.game.GameLogicUtility.checkGameStatus;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -106,7 +106,7 @@ public class GameServiceImplTest {
 
         Game result = gameService.getNextMove(game.getId(), playerXId, userBoard);
 
-        assertEquals(GameStatus.O_WINS, result.getBoard().checkGameStatus());
+        assertEquals(GameStatus.O_WINS, checkGameStatus(result.getBoard().getMatrix()));
         verify(gameRepository).saveGame(game);
     }
 
@@ -129,7 +129,7 @@ public class GameServiceImplTest {
         Game result = gameService.getNextMove(game.getId(), playerXId, userBoard);
 
         assertEquals(GameConstant.PLAYER_O, result.getBoard().getMatrix()[0][2]);
-        assertEquals(GameStatus.IN_PROGRESS, result.getBoard().checkGameStatus());
+        assertEquals(GameStatus.IN_PROGRESS, checkGameStatus(result.getBoard().getMatrix()));
         verify(gameRepository).saveGame(game);
     }
 
@@ -150,7 +150,7 @@ public class GameServiceImplTest {
 
         Game result = gameService.getNextMove(game.getId(), playerXId, userBoard);
 
-        assertEquals(GameStatus.X_WINS, result.getBoard().checkGameStatus());
+        assertEquals(GameStatus.X_WINS, checkGameStatus(result.getBoard().getMatrix()));
         assertArrayEquals(userBoard, result.getBoard().getMatrix());
     }
 
