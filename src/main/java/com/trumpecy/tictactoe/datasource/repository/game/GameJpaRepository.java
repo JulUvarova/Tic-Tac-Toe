@@ -42,8 +42,9 @@ public interface GameJpaRepository extends JpaRepository<GameEntity, UUID> {
     UserStatsProjection getStatsByUserId(@Param("userId") UUID userId);
 
     @Query(value =
-            "SELECT CAST(userId AS VARCHAR) AS userId," +
-            "  COALESCE(SUM(win) * 1.0 / NULLIF(COUNT(*), 0), 0) AS winRatio " +
+            "SELECT CAST(combined.userId AS VARCHAR) AS userId," +
+            "  u.login AS login," +
+            "  COALESCE(SUM(combined.win) * 1.0 / NULLIF(COUNT(*), 0), 0) AS winRatio " +
             "FROM (" +
             "  SELECT playerX AS userId, " +
             "     CASE WHEN status = 'X_WINS' THEN 1 ELSE 0 END AS win " +
@@ -57,7 +58,8 @@ public interface GameJpaRepository extends JpaRepository<GameEntity, UUID> {
             "  WHERE status IN ('X_WINS', 'O_WINS', 'DRAW') " +
             "    AND playerO IS NOT NULL " +
             ") combined " +
-            "GROUP BY userId " +
+            "JOIN users u ON u.id = combined.userId " +
+            "GROUP BY combined.userId, u.login " +
             "ORDER BY winRatio DESC " +
             "LIMIT :limit",
             nativeQuery = true)

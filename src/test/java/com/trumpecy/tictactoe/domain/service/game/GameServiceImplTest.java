@@ -338,8 +338,8 @@ public class GameServiceImplTest {
     @Test
     void getLeaderBoard_Success() {
         List<UserRatio> expectedLeaderboard = Arrays.asList(
-                new UserRatio(playerXId, 0.8),
-                new UserRatio(playerOId, 0.6)
+                new UserRatio(playerXId, "playerX", 0.8),
+                new UserRatio(playerOId, "playerO", 0.6)
         );
         when(gameRepository.getLeaderBoard(10)).thenReturn(expectedLeaderboard);
 

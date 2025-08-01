@@ -11,5 +11,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserRatio {
     private UUID userId;
+    private String login;
     private double winRatio;
 }

@@ -25,6 +25,7 @@ public class StatsWebMapper {
 
         UserRatioDtoResponse ratioDto = new UserRatioDtoResponse();
         ratioDto.setUserId(ratio.getUserId());
+        ratioDto.setLogin(ratio.getLogin());
         ratioDto.setWinRatio(ratio.getWinRatio());
         return ratioDto;
     }

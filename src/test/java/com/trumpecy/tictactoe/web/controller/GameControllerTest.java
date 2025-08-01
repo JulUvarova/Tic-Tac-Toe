@@ -321,8 +321,8 @@ class GameControllerTest {
     void getLeaderBoard_WithDefaultLimit_ShouldReturnLeaderboard() {
         int defaultLimit = 5;
         List<UserRatio> ratios = Arrays.asList(
-                new UserRatio(UUID.randomUUID(), 0.8),
-                new UserRatio(UUID.randomUUID(), 0.6)
+                new UserRatio(UUID.randomUUID(), "user1", 0.8),
+                new UserRatio(UUID.randomUUID(), "user2", 0.6)
         );
 
         when(gameService.getLeaderBoard(defaultLimit)).thenReturn(ratios);
@@ -340,9 +340,9 @@ class GameControllerTest {
     void getLeaderBoard_WithCustomLimit_ShouldReturnLeaderboard() {
         int customLimit = 10;
         List<UserRatio> ratios = Arrays.asList(
-                new UserRatio(UUID.randomUUID(), 0.8),
-                new UserRatio(UUID.randomUUID(), 0.6),
-                new UserRatio(UUID.randomUUID(), 0.4)
+                new UserRatio(UUID.randomUUID(), "user1", 0.8),
+                new UserRatio(UUID.randomUUID(), "user2", 0.6),
+                new UserRatio(UUID.randomUUID(), "user3", 0.4)
         );
 
         when(gameService.getLeaderBoard(customLimit)).thenReturn(ratios);

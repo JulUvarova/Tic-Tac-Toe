@@ -17,6 +17,7 @@ public class StatsDataMapper {
 
         UserRatio ratioModel = new UserRatio();
         ratioModel.setUserId(UUID.fromString(ratio.getUserId()));
+        ratioModel.setLogin(ratio.getLogin());
         ratioModel.setWinRatio(ratio.getWinRatio());
         return ratioModel;
     }
